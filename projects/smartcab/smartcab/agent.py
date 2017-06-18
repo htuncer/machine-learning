@@ -23,7 +23,8 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set any additional class parameters as needed
-        self.decay_factor = 0.05
+        self.decay_factor = 0.0000025
+        self.trial=0
 
 
 
@@ -46,8 +47,9 @@ class LearningAgent(Agent):
             self.epsilon = 0
             self.alpha = 0
         else:
-            self.epsilon = self.epsilon - self.decay_factor
-            print '\n\n\nEPSILON ', self.epsilon, '\n\n\n'
+            self.trial +=1
+            self.epsilon = self.epsilon - self.decay_factor*self.trial
+            #self.epsilon = 1.0/(self.trial**2)
 
         return None
 
@@ -183,7 +185,7 @@ def run():
     #   verbose     - set to True to display additional output from the simulation
     #   num_dummies - discrete number of dummy agents in the environment, default is 100
     #   grid_size   - discrete number of intersections (columns, rows), default is (8, 6)
-    env = Environment(verbose=True)
+    env = Environment(verbose=False)
 
     ##############
     # Create the driving agent
@@ -191,7 +193,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent,learning=True)
+    agent = env.create_agent(LearningAgent,learning=True, alpha=0.1, epsilon=1)
 
     ##############
     # Follow the driving agent
@@ -209,7 +211,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env,update_delay=0.01, log_metrics=True, display=False)
+    sim = Simulator(env,optimized=True, update_delay=0.01, log_metrics=True, display=False)
     #sim = Simulator(env)
 
     ##############
@@ -217,7 +219,7 @@ def run():
     # Flags:
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05
     #   n_test     - discrete number of testing trials to perform, default is 0
-    sim.run(n_test=10)
+    sim.run(n_test=10, tolerance=0.05)
     #sim.run()
 
 
