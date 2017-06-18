@@ -1,5 +1,9 @@
 # Mac OS
 .DS_Store
+projects/boston_housing/
+projects/customer_segments/
+projects/finding_donors/
+projects/titanic_survival_exploration/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
