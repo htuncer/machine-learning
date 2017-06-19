@@ -13632,7 +13632,7 @@ Assuming half of the actions are good, it's fair to say that driving agent is pe
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong>
 To increase safety, all type of data in inputs is more important (compared to waypoint and deadline) as the goal is not to make mistake. Knowledge of light, the existing vehicles on the right and left decides if the  action result in right or wrong output.</p>
-<p>I assume efficiency is reaching to the destination before deadline. In that case, waypoint is very important, hence user can decide on direction that leads to the destination. Deadline just lets us know to if we reach the destination on time or not. Without having deadline information, driving agent should be able to know optimum path to get to the destination.</p>
+<p>I assume efficiency is reaching to the destination before deadline. In that case, waypoint is very important, hence user can decide on direction that leads to the destination. Deadline just lets us know to if we reach the destination on time or not. Without having deadline information, driving agent should be able to know optimum path to get to the destination. Including deadline causes a drastic increase in the dimension of the state space. Including deadline could influence the agent to make illegal moves to meet the deadline.</p>
 
 </div>
 </div>
@@ -13670,6 +13670,40 @@ Number of possible values for waypoint are 4 that are valid_actions: 'None', 'fo
 <p>Number of possible values for inputs: light is 2 (red and green) and each of vehichles on left, right or oncoming can also get any value from valid_actions. So only inputs can get 128(=2<em>4</em>4*4) states.</p>
 <p>Combining inputs and waypoint makes 512 (=4*128) different states.</p>
 <p>The total number of states are exhaustive, hence it's hard to learn in a reasonable number of training trials.</p>
+<p>We can use Monte Carlo simulation to verify how many trials need to visit each state.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="k">def</span> <span class="nf">percent_visited</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+    <span class="n">visited</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+        <span class="n">current_state</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">states</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">visited</span><span class="p">[</span><span class="n">current_state</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">visited</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Each step here is a decision made by the agent. 
+This is for a state space of dimension 512. Given that 2000 steps are approximately needed to visit every state.
+In total 512*2000 steps need to be visited.</p>
 
 </div>
 </div>
@@ -15575,6 +15609,8 @@ trial    testing    parameters
 <p>Agent previous state: ('right', 'red', None, None, None)</p>
 <p>Agent properly idled at a red light. (rewarded 1.40)</p>
 <p>0% of time remaining to reach destination.</p>
+<p>In sim_default-learning.txt, we can see that there are many states that driving agent has not yet learned. This would show these states have not been visited by the agent.</p>
+<p>Our state space has a dimension of approximately 400. At this point, driving agent have done very little exploration. Driving agent is learning, but it hasn't done enough exploration.</p>
 
 </div>
 </div>
@@ -19628,6 +19664,10 @@ SUVORK5CYII=
 I used the following parameters and values in improved Q-Learner: epsilon=1, alpha=0.1, epsilon-tolerance=0.05</p>
 <p>Decaying function: $\epsilon = \epsilon - 0.0000025*t$</p>
 <p>Due to values I picked for epsilon, tolerance and decaying function,  872 trials were done. My aim was to have number of trials close to 1K. I picked larger epsilon i.e., 1 and smaller decaying rate because I wanted driving agent to do exploration more and exploitation less. Further, it helped the learning to happen gradually as epsilon was not decreasing drastically.</p>
+<p>There were 2 options:</p>
+<p>1) reducing the size of the state space by eliminating inputs.</p>
+<p>2) Keeping the state space the same and doing more exploration and letting the agent learn.</p>
+<p>Option 1 is more classical computer science algorithm development, while the option 2 is true reinforcement learning.Therefore, I picked Option 1.</p>
 <p>Improved Q-Learner did lesser bad actions (&lt;0.05 frequency) than default Q-Learner (~0.16 frequency). Default Q-Learner got rewards -1 and improved Q-Learner got close to 2. While default Q-Learner's reliability reached at most 40%, improved Q-Learner reached almost 100%.</p>
 <p>Improved Q-Learner increased safety and reliability ratings to A+ from F that were in default Q-Learner.
 Solely looking at the figures (A+ for safety and reliability), I can say that driving agent successfuly learned an appropriate policy.</p>
