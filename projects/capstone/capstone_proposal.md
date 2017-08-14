@@ -1,13 +1,24 @@
 # Machine Learning Engineer Nanodegree
 ## Capstone Proposal
-Joe Udacity  
-December 31st, 2050
+Hasan Tuncer
+
+August 13th, 2017
 
 ## Proposal
-_(approx. 2-3 pages)_
 
 ### Domain Background
 _(approx. 1-2 paragraphs)_
+
+My goal is to create a machine learning pipeline for detecting a vehicle on a road from a video. The video is captured by a forward looking camera mounted on a vehicle.
+
+Self-driving cars require detection of many surrounding objects - one of them is other vehicled. There are two main aproaches detecting objects:
+
+1) Detecting the objects from images captured by camera. Elon Musk and comma.ai are to name few believing in this approach. is  is in favor of (https://www.youtube.com/watch?v=zIwLWfaAg-8&feature=youtu.be&t=14m48s)
+
+2) Detecting the objects from point clouds captured using Light Detection and Ranging (LIDAR) technology. Most of the self-driving car startups bets on LiDar technology such as Waymo. 
+
+In this project, we will follow the first approach due to available extensive data and benchmark. Detecting an object from an image is a well-known research and application area. One classic approach is to use Histogram of Oriented Gradients (HOG) feature extraction and Linear SVM classifier. However, state of art models use deep learning such as (https://arxiv.org/abs/1409.4842 "Google Inception")
+
 
 In this section, provide brief details on the background information of the domain from which the project is proposed. Historical information relevant to the project should be included. It should be clear how or why a problem in the domain can or should be solved. Related academic research should be appropriately cited in this section, including why that research is relevant. Additionally, a discussion of your personal motivation for investigating a particular problem in the domain is encouraged but not required.
 
