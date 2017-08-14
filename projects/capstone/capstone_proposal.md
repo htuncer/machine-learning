@@ -17,8 +17,15 @@ Self-driving cars require detection of surrounding objects - one of them is othe
 
 2) Detecting the objects from point clouds captured using Light Detection and Ranging (LIDAR) technology. Most of the self-driving car startups bets on LiDar technology such as Waymo. 
 
-In this project, we will follow the first approach due to available extensive data and benchmark. Detecting an object from an image is a well-known research and application area. One classic approach is to use Histogram of Oriented Gradients (HOG) feature extraction and Linear SVM classifier. However, state of art models use deep learning such as [Google Inception](https://arxiv.org/abs/1409.4842)
+In this project, I will follow the first approach due to available extensive data and benchmark. Detecting an object from an image is one of the main reaseach areas of computer vision. Deformable part models (DPMs) and convolutional neural networks (CNNs) are two widely used distinct approaches. https://arxiv.org/pdf/1409.5403.pdf 
+ One classic approach is to use classifiers such as SVM on various locations and scales of an image. For example, deformable parts models (DPM) use a sliding window approach where the classifier is run at evenly spaced locations on the image.
+[YOLO](https://arxiv.org/abs/1506.02640) frames object detection as a regression problem to spatially separated bounding boxes and associated class probabilities.  Region proposal methods [4] (https://link.springer.com/article/10.1007/s11263-013-0620-5) generate potential bounding boxes in an image and then run a classifier on these proposed boxes. Region-based convolutional neural networks (R-CNN) [](https://arxiv.org/abs/1311.2524) trains CNNs end-to-end to classify the proposal regions into object categories or background. R-CNN mainly plays as a classifier, and it does not predict object bounds 
 
+Use this: https://flyyufelix.github.io/2017/04/16/kaggle-nature-conservancy.html
+
+However, state of art models use deep learning such as [Google Inception](https://arxiv.org/abs/1409.4842), 
+
+YOLO .. https://github.com/subodh-malgonde/vehicle-detection
 
 In this section, provide brief details on the background information of the domain from which the project is proposed. Historical information relevant to the project should be included. It should be clear how or why a problem in the domain can or should be solved. Related academic research should be appropriately cited in this section, including why that research is relevant. Additionally, a discussion of your personal motivation for investigating a particular problem in the domain is encouraged but not required.
 
@@ -26,6 +33,8 @@ In this section, provide brief details on the background information of the doma
 _(approx. 1 paragraph)_
 
 In this section, clearly describe the problem that is to be solved. The problem described should be well defined and should have at least one relevant potential solution. Additionally, describe the problem thoroughly such that it is clear that the problem is quantifiable (the problem can be expressed in mathematical or logical terms) , measurable (the problem can be measured by some metric and clearly observed), and replicable (the problem can be reproduced and occurs more than once).
+
+
 
 ### Datasets and Inputs
 _(approx. 2-3 paragraphs)_
