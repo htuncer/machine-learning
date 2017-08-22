@@ -17,9 +17,14 @@ Self-driving cars require detection of surrounding objects - one of them is othe
 
 2) Detecting the objects from point clouds captured using Light Detection and Ranging (LIDAR) technology. Most of the self-driving car startups bets on LiDar technology such as Waymo. 
 
-In this project, I will follow the first approach due to available extensive data and benchmark. Detecting an object from an image is one of the main reaseach areas of computer vision. Deformable part models (DPMs) and convolutional neural networks (CNNs) are two widely used distinct approaches. https://arxiv.org/pdf/1409.5403.pdf 
- One classic approach is to use classifiers such as SVM on various locations and scales of an image. For example, deformable parts models (DPM) use a sliding window approach where the classifier is run at evenly spaced locations on the image.
-[YOLO](https://arxiv.org/abs/1506.02640) frames object detection as a regression problem to spatially separated bounding boxes and associated class probabilities.  Region proposal methods [4] (https://link.springer.com/article/10.1007/s11263-013-0620-5) generate potential bounding boxes in an image and then run a classifier on these proposed boxes. Region-based convolutional neural networks (R-CNN) [](https://arxiv.org/abs/1311.2524) trains CNNs end-to-end to classify the proposal regions into object categories or background. R-CNN mainly plays as a classifier, and it does not predict object bounds 
+In this project, I will follow the first approach due to available extensive data and benchmark. Detecting an object from an image is one of the main reaseach areas of computer vision. Deformable part models (DPMs) and convolutional neural networks (CNNs) are two widely used distinct approaches.   Deformable Parts Models (DPM) are graphical models (Markov random fields) and use a sliding window approach where the classifier such as SVM is run at evenly spaced locations on the image. CNNs are nonlinear classfiers. CNNs are more popular due to good performance on object detection [1](https://arxiv.org/pdf/1409.5403.pdf). To illustrate,  Region-based convolutional neural networks (R-CNN) [](https://arxiv.org/abs/1311.2524) trains CNNs end-to-end to classify the proposal regions into object categories or background. R-CNN deploys region proposal algorithms (such as [EdgeBoxes](https://www.microsoft.com/en-us/research/publication/edge-boxes-locating-object-proposals-from-edges/) and [Selective Search](https://www.koen.me/research/pub/vandesande-iccv2011.pdf)) to select the region  mainly as a pre-processing step before running the CNN as classifier. [Faster R-CNN](https://arxiv.org/pdf/1506.01497.pdf) 
+uses CNN both for the region proposal and also for the prediction.
+
+[Google Inception](https://arxiv.org/abs/1409.4842) uses Faster R-CNN with [ResNet](https://arxiv.org/abs/1512.03385). I'd like to leverage [DenseNet](https://arxiv.org/pdf/1608.06993.pdf) which outperforms ResNet 
+
+
+
+[YOLO](https://arxiv.org/abs/1506.02640) frames object detection as a regression problem to spatially separated bounding boxes and associated class probabilities.  Region proposal methods [4] (https://link.springer.com/article/10.1007/s11263-013-0620-5) generate potential bounding boxes in an image and then run a classifier on these proposed boxes.
 
 Use this: https://flyyufelix.github.io/2017/04/16/kaggle-nature-conservancy.html
 
@@ -31,6 +36,7 @@ In this section, provide brief details on the background information of the doma
 
 ### Problem Statement
 _(approx. 1 paragraph)_
+Self-driving cars need to identify objects around them such as other vehicles on the road. In this problem, the objects are captured by a forward looking camera mounted on a vehicle. Identification of a vehicle will be important factor in deciding the next action that self-driving car will take such as changing lane.
 
 In this section, clearly describe the problem that is to be solved. The problem described should be well defined and should have at least one relevant potential solution. Additionally, describe the problem thoroughly such that it is clear that the problem is quantifiable (the problem can be expressed in mathematical or logical terms) , measurable (the problem can be measured by some metric and clearly observed), and replicable (the problem can be reproduced and occurs more than once).
 
@@ -38,6 +44,9 @@ In this section, clearly describe the problem that is to be solved. The problem 
 
 ### Datasets and Inputs
 _(approx. 2-3 paragraphs)_
+To train my model, I will use the labeled data for [vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/vehicles.zip) and [non-vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/non-vehicles.zip) which are retrieved by Udacity from  [GTI vehicle image database](http://www.gti.ssr.upm.es/data/Vehicle_database.html), [the KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/). If I find the training data set is not enough then I will use the labeled data [here](https://github.com/udacity/self-driving-car/tree/master/annotations).
+
+I will run my pipeline on [the video stream](https://github.com/udacity/CarND-Vehicle-Detection/blob/master/project_video.mp4) provided by Udacity.
 
 In this section, the dataset(s) and/or input(s) being considered for the project should be thoroughly described, such as how they relate to the problem and why they should be used. Information such as how the dataset or input is (was) obtained, and the characteristics of the dataset or input, should be included with relevant references and citations as necessary It should be clear how the dataset(s) or input(s) will be used in the project and whether their use is appropriate given the context of the problem.
 
@@ -58,6 +67,17 @@ In this section, propose at least one evaluation metric that can be used to quan
 
 ### Project Design
 _(approx. 1 page)_
+
+
+* Load the data set: The training data mentioned above will be loaded. I will be careful to use the same number of vehicle and non-vehicle image. I will check the number of different labels; how different the labels among each other; distribution of images per label; and  if there is any mis-labeled image.
+type of What are the different type of vehicles exist in the training set. The characteristics of the data will be explored. 
+
+* Design the convolutional Neural Network (CNN).
+
+* Configure training options.
+
+* Train Faster R-CNN object detector.
+* Evaluate the trained detector.
 
 In this final section, summarize a theoretical workflow for approaching a solution given the problem. Provide thorough discussion for what strategies you may consider employing, what analysis of the data might be required before being used, or which algorithms will be considered for your implementation. The workflow and discussion that you provide should align with the qualities of the previous sections. Additionally, you are encouraged to include small visualizations, pseudocode, or diagrams to aid in describing the project design, but it is not required. The discussion should clearly outline your intended workflow of the capstone project.
 
