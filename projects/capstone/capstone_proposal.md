@@ -52,18 +52,32 @@ In this section, the dataset(s) and/or input(s) being considered for the project
 
 ### Solution Statement
 _(approx. 1 paragraph)_
+Additionally, the solution is quantifiable, measurable, and replicable.
 
-Faster R-CNN will be used for object region detection. DenseNet will be used for classifying if the detected object is a car or not.See Project  Design section for details.
+Faster R-CNN will be used for object region detection. DenseNet will be used for classifying if the detected object is a car or not. See Project Design section for details. Both of these models are state-of-the art in object detection and classification. These models will be trained on [COCO](http://mscoco.org) and [ImageNet](http://www.image-net.org), large datasets conaining thousands of images for hundreds of object types. Therefore, the results will be repeatable and applicable to various problems. For better results on car detection, I will train for additional car/non-car data set.
 
 In this section, clearly describe a solution to the problem. The solution should be applicable to the project domain and appropriate for the dataset(s) or input(s) given. Additionally, describe the solution thoroughly such that it is clear that the solution is quantifiable (the solution can be expressed in mathematical or logical terms) , measurable (the solution can be measured by some metric and clearly observed), and replicable (the solution can be reproduced and occurs more than once).
 
 ### Benchmark Model
 _(approximately 1-2 paragraphs)_
+I will use [KITTI benchmark suit](http://www.cvlibs.net/datasets/kitti/eval_object.php), that includes comperative performance of models in car detection scenario.The result of Faster R-CNN already noted in [](http://www.cvlibs.net/datasets/kitti/eval_object_detail.php?&result=3a25efaffca8895ffba2a65a5cbe4254d8dda259) 
 
 In this section, provide the details for a benchmark model or result that relates to the domain, problem statement, and intended solution. Ideally, the benchmark model or result contextualizes existing methods or known information in the domain and problem given, which could then be objectively compared to the solution. Describe how the benchmark model or result is measurable (can be measured by some metric and clearly observed) with thorough detail.
 
 ### Evaluation Metrics
 _(approx. 1-2 paragraphs)_
+I will use [average precision](http://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf) metric. Precision shows out of all the items labeled as positive, how many truly belong to the positive class. It's calculated as True Positive / (True Positive + False Positive). 
+
+
+I will use [accuracy](https://en.wikipedia.org/wiki/Accuracy_and_precision) to calculate the performance of the model. Accuracy is the fraction of the correct predictions of the system. That also corresponds to 1 - error-rate for Top-1 prediction, generally used for benchmarks.
+
+
+\begin{equation}
+{accuracy}(y, hat(y)) = \frac{1}/{n_samples}\Sum_{i=0}^{n_s - 1}1(y_i = hat(y)_i)
+\end{equation}
+
+In object detection the popular metric is
+[mean Average Precision] (http://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf) However, it is more applicable to multi-class object detection. However in my case there is only 1 class. https://docs.microsoft.com/en-us/cognitive-toolkit/Object-Detection-using-Fast-R-CNN
 
 In this section, propose at least one evaluation metric that can be used to quantify the performance of both the benchmark model and the solution model. The evaluation metric(s) you propose should be appropriate given the context of the data, the problem statement, and the intended solution. Describe how the evaluation metric(s) are derived and provide an example of their mathematical representations (if applicable). Complex evaluation metrics should be clearly defined and quantifiable (can be expressed in mathematical or logical terms).
 
