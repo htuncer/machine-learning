@@ -70,19 +70,19 @@ I will use [average precision](http://homepages.inf.ed.ac.uk/ckiw/postscript/ijc
 _(approx. 1 page)_
 
 
-* Load the data set: The training data mentioned above will be loaded. I will be careful to use the same number of vehicle and non-vehicle image. I will check the number of different labels; how different the labels among each other; distribution of images per label; and  if there is any mis-labeled image.
+* Load and explore the data: The training data mentioned above will be loaded. I will be careful to use the same number of vehicle and non-vehicle image. I will check the number of different labels; how different the labels among each other; distribution of images per label; and  if there is any mis-labeled image.
 type of What are the different type of vehicles exist in the training set. The characteristics of the data will be explored. 
 
-* Design the model: 
+* Build the model: 
   * Object detection: I will use [pre-trained faster r-cnn inception resnetv2] (https://github.com/tensorflow/models/blob/master/object_detection/g3doc/detection_model_zoo.md) for region detection. It will take days to train a model from scratch. The reason of selecting faster r-cnn is its high accuracy result [](https://arxiv.org/abs/1611.10012). 
   
   * Object classification: I will use [pre-trained DenseNet](https://github.com/liuzhuang13/DenseNet) on ImageNet for object classification.
 
 * Configure training options: Training options come with the models as they are initially trained. Depending on the performance of the model on test data, I may tune the model.
 
-* Trainining: Car/Non-car data will be divided into train, test and validation groups. The training data will be used to train Faster R-CNN  for region detection and DenseNet for image classification. 
+* Train the model: Car/Non-car data will be divided into train, test and validation groups. The training data will be used to train Faster R-CNN  for region detection and DenseNet for image classification. 
 
-* Evaluate the trained model: The model will be evaluated on the test and validation data created out of car/non-car dataset. 
+* Test the model: The model will be evaluated on the test and validation data created out of car/non-car dataset. 
 
 * Apply model on the test video: 
   * Input: Create images out of video captured from a car.  Do necessary editing on the images.
