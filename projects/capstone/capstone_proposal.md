@@ -32,13 +32,13 @@ However, state of art models use deep learning such as [Google Inception](https:
 
 YOLO .. https://github.com/subodh-malgonde/vehicle-detection
 
-In this section, provide brief details on the background information of the domain from which the project is proposed. Historical information relevant to the project should be included. It should be clear how or why a problem in the domain can or should be solved. Related academic research should be appropriately cited in this section, including why that research is relevant. Additionally, a discussion of your personal motivation for investigating a particular problem in the domain is encouraged but not required.
+TODO: emphasize   how or why a problem in the domain can or should be solved.
+personal motivation for investigating a particular problem
+
 
 ### Problem Statement
 _(approx. 1 paragraph)_
 Self-driving cars need to identify objects around them such as other vehicles on the road. In this problem, the objects are captured by a forward looking camera mounted on a vehicle. Identification of a vehicle will be important factor in deciding the next action that self-driving car will take such as changing lane.
-
-In this section, clearly describe the problem that is to be solved. The problem described should be well defined and should have at least one relevant potential solution. Additionally, describe the problem thoroughly such that it is clear that the problem is quantifiable (the problem can be expressed in mathematical or logical terms) , measurable (the problem can be measured by some metric and clearly observed), and replicable (the problem can be reproduced and occurs more than once).
 
 
 
@@ -48,7 +48,6 @@ To train my model, I will use the labeled data for [vehicle](https://s3.amazonaw
 
 I will run my pipeline on [the video stream](https://github.com/udacity/CarND-Vehicle-Detection/blob/master/project_video.mp4) provided by Udacity.
 
-In this section, the dataset(s) and/or input(s) being considered for the project should be thoroughly described, such as how they relate to the problem and why they should be used. Information such as how the dataset or input is (was) obtained, and the characteristics of the dataset or input, should be included with relevant references and citations as necessary It should be clear how the dataset(s) or input(s) will be used in the project and whether their use is appropriate given the context of the problem.
 
 ### Solution Statement
 _(approx. 1 paragraph)_
@@ -56,30 +55,16 @@ Additionally, the solution is quantifiable, measurable, and replicable.
 
 Faster R-CNN will be used for object region detection. DenseNet will be used for classifying if the detected object is a car or not. See Project Design section for details. Both of these models are state-of-the art in object detection and classification. These models will be trained on [COCO](http://mscoco.org) and [ImageNet](http://www.image-net.org), large datasets conaining thousands of images for hundreds of object types. Therefore, the results will be repeatable and applicable to various problems. For better results on car detection, I will train for additional car/non-car data set.
 
-In this section, clearly describe a solution to the problem. The solution should be applicable to the project domain and appropriate for the dataset(s) or input(s) given. Additionally, describe the solution thoroughly such that it is clear that the solution is quantifiable (the solution can be expressed in mathematical or logical terms) , measurable (the solution can be measured by some metric and clearly observed), and replicable (the solution can be reproduced and occurs more than once).
 
 ### Benchmark Model
 _(approximately 1-2 paragraphs)_
 I will use [KITTI benchmark suit](http://www.cvlibs.net/datasets/kitti/eval_object.php), that includes comperative performance of models in car detection scenario.The result of Faster R-CNN already noted in [*](http://www.cvlibs.net/datasets/kitti/eval_object_detail.php?&result=3a25efaffca8895ffba2a65a5cbe4254d8dda259) 
 
-In this section, provide the details for a benchmark model or result that relates to the domain, problem statement, and intended solution. Ideally, the benchmark model or result contextualizes existing methods or known information in the domain and problem given, which could then be objectively compared to the solution. Describe how the benchmark model or result is measurable (can be measured by some metric and clearly observed) with thorough detail.
 
 ### Evaluation Metrics
 _(approx. 1-2 paragraphs)_
-I will use [average precision](http://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf) metric. Precision shows out of all the items labeled as positive, how many truly belong to the positive class. It's calculated as True Positive / (True Positive + False Positive). 
+I will use [average precision](http://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf) metric, that is the area under the precision recall curve. Precision reflects out of all the items labeled as positive, how many truly belong to the positive class. Precision is ratio of true positive instances to the sum of true postive and false positives. Recall reflects out of all the items that are truly positive, how many were correctly classified as positive. Or simply, how many positive items were 'recalled' from the dataset. It is  the ratio of true positive instances to the sum of true positives and false negatives.  
 
-
-I will use [accuracy](https://en.wikipedia.org/wiki/Accuracy_and_precision) to calculate the performance of the model. Accuracy is the fraction of the correct predictions of the system. That also corresponds to 1 - error-rate for Top-1 prediction, generally used for benchmarks.
-
-
-\begin{equation}
-{accuracy}(y, hat(y)) = \frac{1}/{n_samples}\Sum_{i=0}^{n_s - 1}1(y_i = hat(y)_i)
-\end{equation}
-
-In object detection the popular metric is
-[mean Average Precision] (http://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf) However, it is more applicable to multi-class object detection. However in my case there is only 1 class. https://docs.microsoft.com/en-us/cognitive-toolkit/Object-Detection-using-Fast-R-CNN
-
-In this section, propose at least one evaluation metric that can be used to quantify the performance of both the benchmark model and the solution model. The evaluation metric(s) you propose should be appropriate given the context of the data, the problem statement, and the intended solution. Describe how the evaluation metric(s) are derived and provide an example of their mathematical representations (if applicable). Complex evaluation metrics should be clearly defined and quantifiable (can be expressed in mathematical or logical terms).
 
 ### Project Design
 _(approx. 1 page)_
@@ -104,7 +89,7 @@ type of What are the different type of vehicles exist in the training set. The c
   * Run the model: Run the trained model on the images. Output should be region of  car(s) in the image are in rectangle.
   * Output: Create a video by putting toget the frames output of our model.
 
-In this final section, summarize a theoretical workflow for approaching a solution given the problem. Provide thorough discussion for what strategies you may consider employing, what analysis of the data might be required before being used, or which algorithms will be considered for your implementation. The workflow and discussion that you provide should align with the qualities of the previous sections. Additionally, you are encouraged to include small visualizations, pseudocode, or diagrams to aid in describing the project design, but it is not required. The discussion should clearly outline your intended workflow of the capstone project.
+I will mainly use Keras and Tensorflow.
 
 -----------
 
