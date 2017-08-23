@@ -53,6 +53,8 @@ In this section, the dataset(s) and/or input(s) being considered for the project
 ### Solution Statement
 _(approx. 1 paragraph)_
 
+Faster R-CNN will be used for object region detection. DenseNet will be used for classifying if the detected object is a car or not.See Project  Design section for details.
+
 In this section, clearly describe a solution to the problem. The solution should be applicable to the project domain and appropriate for the dataset(s) or input(s) given. Additionally, describe the solution thoroughly such that it is clear that the solution is quantifiable (the solution can be expressed in mathematical or logical terms) , measurable (the solution can be measured by some metric and clearly observed), and replicable (the solution can be reproduced and occurs more than once).
 
 ### Benchmark Model
@@ -72,12 +74,21 @@ _(approx. 1 page)_
 * Load the data set: The training data mentioned above will be loaded. I will be careful to use the same number of vehicle and non-vehicle image. I will check the number of different labels; how different the labels among each other; distribution of images per label; and  if there is any mis-labeled image.
 type of What are the different type of vehicles exist in the training set. The characteristics of the data will be explored. 
 
-* Design the convolutional Neural Network (CNN).
+* Design the model: 
+  * Object detection: I will use [pre-trained faster r-cnn inception resnetv2] (https://github.com/tensorflow/models/blob/master/object_detection/g3doc/detection_model_zoo.md) for region detection. It will take days to train a model from scratch. The reason of selecting faster r-cnn is its high accuracy result [](https://arxiv.org/abs/1611.10012). 
+  
+  * Object classification: I will use [pre-trained DenseNet](https://github.com/liuzhuang13/DenseNet) on ImageNet for object classification.
 
-* Configure training options.
+* Configure training options: Training options come with the models as they are initially trained. Depending on the performance of the model on test data, I may tune the model.
 
-* Train Faster R-CNN object detector.
-* Evaluate the trained detector.
+* Trainining: Car/Non-car data will be divided into train, test and validation groups. The training data will be used to train Faster R-CNN  for region detection and DenseNet for image classification. 
+
+* Evaluate the trained model: The model will be evaluated on the test and validation data created out of car/non-car dataset. 
+
+* Apply model on the test video: 
+  * Input: Create images out of video captured from a car.  Do necessary editing on the images.
+  * Run the model: Run the trained model on the images. Output should be region of  car(s) in the image are in rectangle.
+  * Output: Create a video by putting toget the frames output of our model.
 
 In this final section, summarize a theoretical workflow for approaching a solution given the problem. Provide thorough discussion for what strategies you may consider employing, what analysis of the data might be required before being used, or which algorithms will be considered for your implementation. The workflow and discussion that you provide should align with the qualities of the previous sections. Additionally, you are encouraged to include small visualizations, pseudocode, or diagrams to aid in describing the project design, but it is not required. The discussion should clearly outline your intended workflow of the capstone project.
 
