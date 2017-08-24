@@ -8,7 +8,7 @@ August 13th, 2017
 
 ### Domain Background
 
-Self-driving cars are finally becoming real. Their impact on people's live and economy will be tremendous [[1](https://medium.com/startup-grind/mind-blowing-driverless-future-fcc5197d509)]. There are so many interesting challenges come with self-driving car technology. One of them is detection of surrounding objects including other vehicles. This information is necessary to make a right decision such as turning without causing any safety problem.   My goal is to create a machine learning pipeline for detecting vehicle(s) on a road from a video. The video is captured by a forward looking camera mounted on a vehicle.
+Self-driving cars are finally becoming real. Their impact on people's live and economy will be tremendous [[1](https://medium.com/startup-grind/mind-blowing-driverless-future-fcc5197d509)]. There are so many interesting challenges come with self-driving car technology. One of them is detection of surrounding objects including other vehicles. This information is necessary to make a right decision such as turning without causing any safety problem. My goal is to create a machine learning pipeline for detecting vehicle(s) on a road from a video. The video is captured by a forward looking camera mounted on a vehicle.
 
 There are two main data types used for detecting objects in self-driving car domain:
 
@@ -26,22 +26,22 @@ Region-based convolutional neural networks ([R-CNN](https://arxiv.org/abs/1311.2
 
 ### Problem Statement
 
-Self-driving cars need to identify objects around them such as other vehicles on the road. In this problem, the objects are captured by a forward looking camera mounted on a vehicle. Identification of a vehicle will be important factor in deciding the next action that self-driving car will take such as changing lane.
+Vehicle detection is importat for public safety and security, surveillance, intelligent traffic control and autonomous driving.  Self-driving cars need to identify objects around them such as other vehicles on the road. In this problem, the objects are captured as a video by a forward looking camera mounted on a vehicle. Identification of a vehicle will be important factor in deciding the next action that self-driving car will take such as changing lane. It is a challenging problem due to the large variations in appearance and camera viewpoint, wheather, lightening and occlusions. From machine learning perspective, this problem is a classification problem rather than regression. My goal is to differentiate the objects on the road from the background, sky, hill, or road. Then classify if they are vehicle or not. The output will also be a video similar to the input.  However,  other vehicles in the video will be shown in box and tracked along the way.
 
 
 
 ### Datasets and Inputs
 
-To train my model, I will use the labeled data for [vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/vehicles.zip) and [non-vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/non-vehicles.zip) which are retrieved by Udacity from  [GTI vehicle image database](http://www.gti.ssr.upm.es/data/Vehicle_database.html), [the KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/). If I find the training data set is not enough then I will use the labeled data [here](https://github.com/udacity/self-driving-car/tree/master/annotations).
+To train my model, I will use the labeled data for [vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/vehicles.zip) and [non-vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/non-vehicles.zip) which are retrieved by Udacity from  [GTI vehicle image database](http://www.gti.ssr.upm.es/data/Vehicle_database.html), [the KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/). The data has two labels: vehicle and non-vehicle. There are around 8800 images at each class. The images are 64x64 pixels, in RGB color space with no Alpha channel and in portable network graphics (PNG) format. If I find the training data set is not enough then I will use the labeled data [here](https://github.com/udacity/self-driving-car/tree/master/annotations). I will use %60 of data for training %20 for validation and %20 for testing.
 
 I will run my pipeline on [the video](https://github.com/udacity/CarND-Vehicle-Detection/blob/master/project_video.mp4) provided by Udacity.
 
 
 ### Solution Statement
 
-Additionally, the solution is quantifiable, measurable, and replicable.
+Faster R-CNN will be used for object region detection. DenseNet will be used for classifying if the detected object is a vehicle or not. Both of these models are state-of-the art in object detection and classification. See Domain Background section for details of these models. I will use the pre-trained version of Faster R-CNN and DenseNet because it may take days to train a model from scratch. [Faster R-CNN inception resnetv2](https://github.com/tensorflow/models/blob/master/object_detection/g3doc/detection_model_zoo.md) is pre-trained on [COCO](http://mscoco.org). [DenseNet](https://github.com/liuzhuang13/DenseNet) is pre-trained on [ImageNet](http://www.image-net.org). COCO and ImageNet are large datasets containing thousands of images for hundreds of object types. Faster R-CNN and DenseNet will go through supervised training with vehicle/non-vehicle dataset that I mentioned above. The images in these data sets will be resized to match the image sizes used during pre-train process. I don't expect to make other pre-processing on the images.
 
-Faster R-CNN will be used for object region detection. DenseNet will be used for classifying if the detected object is a vehicle or not. See Project Design section for details. Both of these models are state-of-the art in object detection and classification. These models will be trained on [COCO](http://mscoco.org) and [ImageNet](http://www.image-net.org), large datasets conaining thousands of images for hundreds of object types. Therefore, the results will be repeatable and applicable to various problems. For better results on vehicle detection, I will train my model with additional vehicle/non-vehicle data set.
+The trained model will be applied to frames of a video. The output of the model will be converted back as video where vehicles bounded with box and tracked along the way.
 
 
 ### Benchmark Model
@@ -56,7 +56,7 @@ I will use [average precision (AP)](http://homepages.inf.ed.ac.uk/ckiw/postscrip
 
 ### Project Design
 
-* Load and explore the data: The vehicle/non-vehicle training data mentioned above will be loaded. I will be careful to use the same number of vehicle and non-vehicle images. I will check if the type/color of the vehicle and the angle the images are taken almost equally distributed. Of course, it is important not to have mis-labeled image.
+* Load and explore the data: The vehicle/non-vehicle training data mentioned above will be loaded. I will be careful to use the same number of vehicle and non-vehicle images. I will check if the type/color of the vehicle and the angle the images are taken almost equally distributed. Of course, it is important not to have mis-labeled image. The images in the data sets will be resized to match the image sizes used during pre-trainning of Faster R-CNN and DenseNet. I don't expect to make other pre-processing on the images.
 
 * Build the model: 
   * Region detection: I will use [pre-trained faster r-cnn inception resnetv2](https://github.com/tensorflow/models/blob/master/object_detection/g3doc/detection_model_zoo.md) for region detection. Pre-trained model will speed my model training because it may take days to train a model from scratch. The reason of selecting faster r-cnn is its high accuracy result [[3](https://arxiv.org/abs/1611.10012)]. 
