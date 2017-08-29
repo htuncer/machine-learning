@@ -1,0 +1,3 @@
+[submodule "projects/capstone/tf_models"]
+	path = projects/capstone/tf_models
+	url = https://github.com/tensorflow/models.git
