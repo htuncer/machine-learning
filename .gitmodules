@@ -1,3 +1,6 @@
 [submodule "projects/capstone/tf_models"]
 	path = projects/capstone/tf_models
 	url = https://github.com/tensorflow/models.git
+[submodule "projects/capstone/DenseNet"]
+	path = projects/capstone/DenseNet
+	url = https://github.com/flyyufelix/DenseNet-Keras.git
