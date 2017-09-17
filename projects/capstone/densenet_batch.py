@@ -80,8 +80,7 @@ def load_data(img_rows, img_cols):
     non_vehicles = tf.gfile.Glob(re_path)  # f has list of file paths
     print("non-vehicles %s" % len(non_vehicles))
     images = list()
-    input_size = 10
-    for img_path in vehicles[:input_size]:
+    for img_path in vehicles:
         img = cv2.resize(cv2.imread(img_path), (img_rows, img_cols)).astype(np.float32)
         img[:, :, 0] -= 103.939
         img[:, :, 1] -= 116.779
@@ -89,7 +88,7 @@ def load_data(img_rows, img_cols):
         images.append((1,img))
     del vehicles
 
-    for img_path in non_vehicles[:input_size]:  # TODO Check if label should start from 0 or 1
+    for img_path in non_vehicles:  # TODO Check if label should start from 0 or 1
         img = cv2.resize(cv2.imread(img_path), (img_rows, img_cols)).astype(np.float32)
         img[:, :, 0] -= 103.939
         img[:, :, 1] -= 116.779
