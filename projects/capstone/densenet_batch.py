@@ -80,7 +80,8 @@ def load_data(img_rows, img_cols):
     non_vehicles = tf.gfile.Glob(re_path)  # f has list of file paths
     print("non-vehicles %s" % len(non_vehicles))
     images = list()
-    for img_path in vehicles:
+    x = 32
+    for img_path in vehicles[:x]:
         img = cv2.resize(cv2.imread(img_path), (img_rows, img_cols)).astype(np.float32)
         img[:, :, 0] -= 103.939
         img[:, :, 1] -= 116.779
@@ -88,7 +89,7 @@ def load_data(img_rows, img_cols):
         images.append((1,img))
     del vehicles
 
-    for img_path in non_vehicles:  # TODO Check if label should start from 0 or 1
+    for img_path in non_vehicles[:x]:  # TODO Check if label should start from 0 or 1
         img = cv2.resize(cv2.imread(img_path), (img_rows, img_cols)).astype(np.float32)
         img[:, :, 0] -= 103.939
         img[:, :, 1] -= 116.779
@@ -224,7 +225,7 @@ def densenet161_model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth
     # Learning rate is changed to 0.001
     sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
     #HASAN 2 is number of gpu
-    model = make_parallel(model, 2)
+    #model = make_parallel(model, 2)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
     return model
@@ -338,13 +339,12 @@ if __name__ == '__main__':
     print('\n\n\n\nCreating model')
     model = densenet161_model(img_rows=img_rows, img_cols=img_cols,
                                   color_type=channel, num_classes=num_classes)
-    print('\n\n\n\nCreating model')
     train_datagen = ImageDataGenerator()
 
-    print('getting data')
+    print('\n\n\n\ngetting data')
     X_train, Y_train, X_valid, Y_valid = load_data(img_rows, img_cols)
 
-    print('getting training')
+    print('\n\n\n\ngetting training data')
     # compute quantities required for featurewise normalization
     # (std, mean, and principal components if ZCA whitening is applied)
     train_datagen.fit(X_train)
@@ -352,14 +352,14 @@ if __name__ == '__main__':
     # fits the model on batches with real-time data augmentation:
     #model.fit_generator(datagen.flow(X_train, Y_train, batch_size=2), steps_per_epoch=len(X_train) / 2, epochs=epochs)
 
-    print('getting validation')
+    print('\n\n\ngetting validation data')
     val_datagen = ImageDataGenerator()
     # compute quantities required for featurewise normalization
     # (std, mean, and principal components if ZCA whitening is applied)
     val_datagen.fit(X_valid)
     val_generator=val_datagen.flow(X_valid, Y_valid, batch_size=batch_size)
 
-    print('fitting')
+    print('\n\n\nfitting')
     model.fit_generator(
         train_generator,
         steps_per_epoch=int(len(X_train)/batch_size),
