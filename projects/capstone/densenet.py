@@ -15,6 +15,7 @@ import cv2
 import numpy as np
 from keras.utils import np_utils
 import os
+import sys
 import tensorflow as tf
 import random
 from sklearn.metrics import average_precision_score
@@ -54,13 +55,15 @@ def yo(img_rows, img_cols):
 
 def load_data1(img_rows, img_cols):
     num_classes = 2
-    img1 = cv2.resize(cv2.imread('data/labeled_images/vehicle/GTI_Far/image0000.png'),
+    img1 = cv2.resize(cv2.imread('data/labeled_images/image0839.png'),
                       (img_rows, img_cols)).astype(np.float32)
-    img2 = cv2.resize(cv2.imread('data/labeled_images/vehicle/GTI_Far/image0002.png'),
-                      (img_rows, img_cols)).astype(np.float32)
-    img3 = cv2.resize(cv2.imread('data/labeled_images/vehicle/GTI_Far/image0003.png'),
-                      (img_rows, img_cols)).astype(np.float32)
+    #img2 = cv2.resize(cv2.imread('data/labeled_images/vehicle/GTI_Far/image0002.png'),
+    #                  (img_rows, img_cols)).astype(np.float32)
+    #img3 = cv2.resize(cv2.imread('data/labeled_images/vehicle/GTI_Far/image0003.png'),
+    #                  (img_rows, img_cols)).astype(np.float32)
 
+    print("1 img size: %s"%sys.getsizeof(img1))
+    sys.exit(-1)
     for x in (img1, img2, img3):
         x[:, :, 0] -= 103.939
         x[:, :, 1] -= 116.779
@@ -349,7 +352,8 @@ if __name__ == '__main__':
     # Load Cifar10 data. Please implement your own load_data() module for your own dataset
     #X_train, Y_train, X_valid, Y_valid = load_cifar10_data(img_rows, img_cols)
     print('getting data')
-    X_train, Y_train, X_valid, Y_valid = load_data(img_rows, img_cols)
+    X_train, Y_train, X_valid, Y_valid = load_data1(img_rows, img_cols)
+    sys.exit(-1)
 
     # Load our model
     print('\n\n\n\nCreating model')
