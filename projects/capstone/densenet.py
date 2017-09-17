@@ -93,7 +93,8 @@ def load_data(img_rows, img_cols):
     non_vehicles = tf.gfile.Glob(re_path)  # f has list of file paths
     print("non-vehicles %s" % len(non_vehicles))
     images = list()
-    for img_path in vehicles:
+    x = 32
+    for img_path in vehicles[:x]:
         img = cv2.resize(cv2.imread(img_path), (img_rows, img_cols)).astype(np.float32)
         img[:, :, 0] -= 103.939
         img[:, :, 1] -= 116.779
@@ -101,7 +102,7 @@ def load_data(img_rows, img_cols):
         images.append((1,img))
     del vehicles
 
-    for img_path in non_vehicles:  # TODO Check if label should start from 0 or 1
+    for img_path in non_vehicles[:x]:  # TODO Check if label should start from 0 or 1
         img = cv2.resize(cv2.imread(img_path), (img_rows, img_cols)).astype(np.float32)
         img[:, :, 0] -= 103.939
         img[:, :, 1] -= 116.779
@@ -136,6 +137,7 @@ def load_data(img_rows, img_cols):
     Y_valid = np_utils.to_categorical(Y_valid, num_classes)
 
     return X_train, Y_train, X_valid, Y_valid
+
 
 
 def densenet161_model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth_rate=48, nb_filter=96, reduction=0.5, dropout_rate=0.0, weight_decay=1e-4, num_classes=1000, weights_path=None):
