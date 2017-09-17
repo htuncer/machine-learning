@@ -351,8 +351,7 @@ if __name__ == '__main__':
     # Load Cifar10 data. Please implement your own load_data() module for your own dataset
     #X_train, Y_train, X_valid, Y_valid = load_cifar10_data(img_rows, img_cols)
     print('\n\n\n\ngetting data')
-    X_train, Y_train, X_valid, Y_valid = load_data1(img_rows, img_cols)
-    sys.exit(-1)
+    X_train, Y_train, X_valid, Y_valid = load_data(img_rows, img_cols))
 
     # Load our model
     print('\n\n\n\nCreating model')
