@@ -81,7 +81,6 @@ def load_data1(img_rows, img_cols):
 
     return X_train, Y_train, X_valid, Y_valid
 
-
 def load_data(img_rows, img_cols):
     num_classes = 2
     # vehicles 8792
@@ -135,7 +134,7 @@ def load_data(img_rows, img_cols):
     # Transform targets to keras compatible format
     Y_train = np_utils.to_categorical(Y_train, num_classes)
     Y_valid = np_utils.to_categorical(Y_valid, num_classes)
-
+    print("shapes %d %d %d %d"%(X_train.shape[0], Y_train.shape[0], X_valid.shape[0], Y_valid.shape[0]))
     return X_train, Y_train, X_valid, Y_valid
 
 
@@ -337,8 +336,6 @@ def dense_block(x, stage, nb_layers, nb_filter, growth_rate, dropout_rate=None, 
 
 if __name__ == '__main__':
 
-    # Example to fine-tune on 3000 samples from Cifar10
-
     start_time = time.time()
     img_rows, img_cols = 224, 224  # Resolution of inputs
     channel = 3
@@ -346,10 +343,6 @@ if __name__ == '__main__':
     batch_size = 1
     nb_epoch = 10
 
-    #X_train, Y_train, X_valid, Y_valid = yo(img_rows, img_cols)
-    # sys.exit(-1)
-    # Load Cifar10 data. Please implement your own load_data() module for your own dataset
-    #X_train, Y_train, X_valid, Y_valid = load_cifar10_data(img_rows, img_cols)
     print('\n\n\n\ngetting data')
     X_train, Y_train, X_valid, Y_valid = load_data(img_rows, img_cols))
 

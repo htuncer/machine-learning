@@ -122,6 +122,7 @@ def load_data(img_rows, img_cols):
     # Transform targets to keras compatible format
     Y_train = np_utils.to_categorical(Y_train, num_classes)
     Y_valid = np_utils.to_categorical(Y_valid, num_classes)
+    print("shapes %d %d %d %d"%(X_train.shape[0], Y_train.shape[0], X_valid.shape[0], Y_valid.shape[0]))
 
     return X_train, Y_train, X_valid, Y_valid
 
@@ -339,6 +340,8 @@ if __name__ == '__main__':
     print('\n\n\n\nCreating model')
     model = densenet161_model(img_rows=img_rows, img_cols=img_cols,
                                   color_type=channel, num_classes=num_classes)
+
+    print('\n\n\n\ncreating image data generator')
     train_datagen = ImageDataGenerator()
 
     print('\n\n\n\ngetting data')
