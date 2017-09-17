@@ -93,52 +93,49 @@ def load_data(img_rows, img_cols):
     non_vehicles = tf.gfile.Glob(re_path)  # f has list of file paths
     print("non-vehicles %s" % len(non_vehicles))
     images = list()
-    cnt = 0
     for img_path in vehicles:
         img = cv2.resize(cv2.imread(img_path), (img_rows, img_cols)).astype(np.float32)
         img[:, :, 0] -= 103.939
         img[:, :, 1] -= 116.779
         img[:, :, 2] -= 123.68
-        image_map = {'label': 1, 'image': img}
-        images.append(image_map)
-        #cnt += 1
-        # if cnt == 2:
-        #    break
+        images.append((1,img))
+    del vehicles
 
     for img_path in non_vehicles:  # TODO Check if label should start from 0 or 1
         img = cv2.resize(cv2.imread(img_path), (img_rows, img_cols)).astype(np.float32)
         img[:, :, 0] -= 103.939
         img[:, :, 1] -= 116.779
         img[:, :, 2] -= 123.68
-        image_map = {'label': 0, 'image': img}
-        images.append(image_map)
-        #cnt += 1
-        # if cnt == 4:
-        #    break
+        images.append((0, img))
+    del non_vehicles
 
     shuffled_index = list(range(len(images)))
     random.seed(5413210)
     random.shuffle(shuffled_index)
     images = [images[i] for i in shuffled_index]
 
+    del shuffled_index
+
     split = int(len(images) * 0.7)
 
-    X_list = [img['image'] for img in images]
-    Y_list = [img['label'] for img in images]
+    X_list = [img[1] for img in images]
+    Y_list = [img[0] for img in images]
+    del images
 
     X_train = np.array(X_list[:split])
     X_valid = np.array(X_list[split:])
+    del X_list
 
     Y_train = np.array(Y_list[:split])
     Y_valid = np.array(Y_list[split:])
+
+    del Y_list
 
     # Transform targets to keras compatible format
     Y_train = np_utils.to_categorical(Y_train, num_classes)
     Y_valid = np_utils.to_categorical(Y_valid, num_classes)
 
     return X_train, Y_train, X_valid, Y_valid
-
-# HASAN num_classes=None
 
 
 def densenet161_model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth_rate=48, nb_filter=96, reduction=0.5, dropout_rate=0.0, weight_decay=1e-4, num_classes=1000, weights_path=None):
@@ -344,14 +341,14 @@ if __name__ == '__main__':
     img_rows, img_cols = 224, 224  # Resolution of inputs
     channel = 3
     num_classes = 2
-    batch_size = 8
+    batch_size = 1
     nb_epoch = 10
 
     #X_train, Y_train, X_valid, Y_valid = yo(img_rows, img_cols)
     # sys.exit(-1)
     # Load Cifar10 data. Please implement your own load_data() module for your own dataset
     #X_train, Y_train, X_valid, Y_valid = load_cifar10_data(img_rows, img_cols)
-    print('getting data')
+    print('\n\n\n\ngetting data')
     X_train, Y_train, X_valid, Y_valid = load_data1(img_rows, img_cols)
     sys.exit(-1)
 
@@ -371,7 +368,7 @@ if __name__ == '__main__':
               )
 
     print('\n\n\n\nSaving Model')
-    model_file = 'data/DenseNet_finetuned.h5'
+    model_file = 'data/DenseNet_finetuned_std.h5'
     model.save_weights(model_file)
 
     print('\n\n\n\nLoading Model')
