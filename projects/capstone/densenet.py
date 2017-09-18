@@ -23,7 +23,7 @@ from densenet_custom_layers import Scale
 from keras.models import model_from_json
 #from load_cifar10 import load_cifar10_data
 import time
-
+import datetime
 
 def yo(img_rows, img_cols):
     (X_train, Y_train), (X_valid, Y_valid) = cifar10.load_data()
@@ -336,7 +336,7 @@ def dense_block(x, stage, nb_layers, nb_filter, growth_rate, dropout_rate=None, 
 
 if __name__ == '__main__':
 
-    start_time = time.time()
+    start_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     img_rows, img_cols = 224, 224  # Resolution of inputs
     channel = 3
     num_classes = 2
@@ -375,6 +375,5 @@ if __name__ == '__main__':
     # average precision
     score = average_precision_score(Y_valid, predictions_valid)
     print("score %s" % score)
-    end_time = time.time()
-    duration = (end_time - start_time) / 3600
-    print('Duration: %s' % duration)
+    end_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print('Start:%s\nEnd  :%s' %(start_time,end_time))
