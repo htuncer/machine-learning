@@ -344,7 +344,7 @@ if __name__ == '__main__':
     nb_epoch = 10
 
     print('\n\n\n\ngetting data')
-    X_train, Y_train, X_valid, Y_valid = load_data(img_rows, img_cols))
+    X_train, Y_train, X_valid, Y_valid = load_data(img_rows, img_cols)
 
     # Load our model
     print('\n\n\n\nCreating model')
