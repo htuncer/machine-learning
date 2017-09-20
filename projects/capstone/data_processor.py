@@ -80,7 +80,8 @@ if __name__ == "__main__":
     # in-place shuffeling
     data = data.sample(frac=1).reset_index(drop=True)
 
-    training_size = int(data.shape[0] * 0.7)
+    #training_size = int(data.shape[0] * 0.7)
+    training_size=10
     validation_size = int(training_size * 0.25)
 
     print('Creating train.record - size:%d' % training_size)
