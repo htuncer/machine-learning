@@ -92,7 +92,7 @@ def load_data(img_rows, img_cols):
     non_vehicles = tf.gfile.Glob(re_path)  # f has list of file paths
     print("non-vehicles %s" % len(non_vehicles))
     images = list()
-    x = 32
+    x = 1000
     for img_path in vehicles[:x]:
         img = cv2.resize(cv2.imread(img_path), (img_rows, img_cols)).astype(np.float32)
         img[:, :, 0] -= 103.939
