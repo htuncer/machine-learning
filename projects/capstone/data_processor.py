@@ -74,10 +74,14 @@ if __name__ == "__main__":
     label_file = PROJECT_PATH + "/data/annotated_images/labels.csv"
     img_dir = PROJECT_PATH + "/data/annotated_images/"
     data = pd.read_csv(label_file)
+    #drop the rows for Pedestrian
+    data = data[data.Label != 'Pedestrian']
+
     # in-place shuffeling
     data = data.sample(frac=1).reset_index(drop=True)
 
     training_size = int(data.shape[0] * 0.7)
+    validation_size = int(training_size * 0.25)
 
     print('Creating train.record - size:%d' % training_size)
     output_path = PROJECT_PATH + "/data/train.record"
@@ -87,10 +91,10 @@ if __name__ == "__main__":
         writer.write(tf_record.SerializeToString())
     writer.close()
     print ('completed train.record\n\n\n')
-    print ('creating val.record - size:%d' % (data.shape[0] - training_size))
+    print ('creating val.record - size:%d' % validation_size)
     output_path = PROJECT_PATH + "/data/val.record"
     writer = tf.python_io.TFRecordWriter(output_path)
-    for index, row in data[:training_size].iterrows():
+    for index, row in data[data.shape[0]-validation_size:].iterrows():
         tf_record = img_to_tf_record(row, img_dir, label_map)
         writer.write(tf_record.SerializeToString())
     writer.close()
