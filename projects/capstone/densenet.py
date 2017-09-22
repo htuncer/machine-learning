@@ -139,9 +139,9 @@ def load_data(img_rows, img_cols):
 
 
 
-def _model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth_rate=48, nb_filter=96, reduction=0.5, dropout_rate=0.0, weight_decay=1e-4, num_classes=1000, weights_path=None):
+def densenet_model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth_rate=48, nb_filter=96, reduction=0.5, dropout_rate=0.0, weight_decay=1e-4, num_classes=1000, weights_path=None):
     '''
-    DenseNet 161 Model for Keras
+    DenseNet Model for Keras
     Model Schema is based on
     https://github.com/flyyufelix/DenseNet-Keras
     ImageNet Pretrained Weights
