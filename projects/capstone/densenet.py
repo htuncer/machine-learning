@@ -139,7 +139,7 @@ def load_data(img_rows, img_cols):
 
 
 
-def densenet161_model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth_rate=48, nb_filter=96, reduction=0.5, dropout_rate=0.0, weight_decay=1e-4, num_classes=1000, weights_path=None):
+def _model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth_rate=48, nb_filter=96, reduction=0.5, dropout_rate=0.0, weight_decay=1e-4, num_classes=1000, weights_path=None):
     '''
     DenseNet 161 Model for Keras
     Model Schema is based on
@@ -348,7 +348,7 @@ if __name__ == '__main__':
 
     # Load our model
     print('\n\n\n\nCreating model')
-    model = densenet161_model(img_rows=img_rows, img_cols=img_cols,
+    model = densenet_model(img_rows=img_rows, img_cols=img_cols,
                               color_type=channel, num_classes=num_classes)
 
     # Start Fine-tuning
@@ -366,7 +366,7 @@ if __name__ == '__main__':
     model.save_weights(model_file)
 
     print('\n\n\n\nLoading Model')
-    finetuned_model = densenet161_model(img_rows=img_rows, img_cols=img_cols,
+    finetuned_model = densenet_model(img_rows=img_rows, img_cols=img_cols,
                                         color_type=channel, num_classes=num_classes, weights_path=model_file)
 
     print('\n\n\n\nPredicting')
