@@ -218,7 +218,7 @@ def densenet161_model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth
 
     if weights_path is None and K.image_dim_ordering() == 'th':
         # Use pre-trained weights for Theano backend
-        weights_path = 'data/densenet161_weights_th.h5'
+        weights_path = 'data/densenet_weights_th.h5'
     elif weights_path is None:
         # Use pre-trained weights for Tensorflow backend
         weights_path = 'data/densenet161_weights_tf.h5'
@@ -362,7 +362,7 @@ if __name__ == '__main__':
               )
 
     print('\n\n\n\nSaving Model')
-    model_file = 'data/DenseNet_finetuned_std.h5'
+    model_file = 'data/densenet_finetuned_weights.h5'
     model.save_weights(model_file)
 
     print('\n\n\n\nLoading Model')
