@@ -55,7 +55,14 @@ I will run my pipeline on [the test video](https://github.com/htuncer/machine-le
 
 ![20 vehicle images taken from [GTI](http://www.gti.ssr.upm.es/data/Vehicle_database.html)](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/sample_vehicle.png)
 
+
+Annotated images
+![Sample annotated image](https://github.com/udacity/self-driving-car/blob/master/annotations/images/crowdai.png)
+
+
 ![First 10 rows of labels.csv for annotated images](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/sample_annotation.png)
+
+
 
 In this section, you will need to provide some form of visualization that summarizes or extracts a relevant characteristic or feature about the data. The visualization should adequately support the data being used. Discuss why this visualization was chosen and how it is relevant. Questions to ask yourself when writing this section:
 - _Have you visualized a relevant characteristic or feature about the dataset or input data?_
