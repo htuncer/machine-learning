@@ -39,9 +39,12 @@ _(approx. 2-4 pages)_
 ### Data Exploration
 To train my object detection model, I will use the labeled data for [vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/vehicles.zip) and [non-vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/non-vehicles.zip) which are retrieved by Udacity from  [GTI vehicle image database](http://www.gti.ssr.upm.es/data/Vehicle_database.html), [the KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/). The data has two labels: vehicle and non-vehicle. There are around 8800 images at each class. The images are 64x64 pixels, in RGB color space with no Alpha channel and in portable network graphics (PNG) format.
 
-I made sure that I have equal number of samples from both class. The images were also from different angles and distance from a vehicle. Variety of make, models cars in different colors.
+Non-vehicle images are extracted from road sequences not containing vehicles. Vehicle images includes high variety of vehicle make, model and color. One important feature affecting the appearance of the vehicle is the position of the vehicle relative to the camera. Therefore,  images are separated in four different regions according to the pose: middle/close range in front of the camera, middle/close range in the left, close/middle range in the right, and far range. In addition, the images are extracted in such a way that they do not perfectly fit the contour of the vehicle in order to make the classifier more robust to offsets in the hypothesis generation stage. Instead, some images contain the vehicle loosely (some background is also included in the image), while others only contain the vehicle partially
 
-To train my object classification model, I will use  [annotated data set](https://github.com/udacity/self-driving-car/tree/master/annotations) provided by CrowdAI. It contains over 65,000 labels across 9,423 frames (in JPG format) collected from a Point Grey research cameras running at full resolution of 1920x1200 at 2hz. The dataset includes labels for car, truck and pedestrian.
+I made sure that I have equal number of samples from both vehicle and non-vehicle classes.
+
+To train my object classification model, I will use  [annotated data set](https://github.com/udacity/self-driving-car/tree/master/annotations) provided by CrowdAI. It contains over 65,000 labels across 9,423 frames (in JPG format) collected from a Point Grey research cameras running at full resolution of 1920x1200 at 2hz. The dataset includes labels for car, truck and pedestrian. I removed the pedestrian label as my goal is not to identify pedestrians but vehicles.
+
 
 I will use %80 of data for training %20 for validation.
 
@@ -50,7 +53,10 @@ I will run my pipeline on [the test video](https://github.com/htuncer/machine-le
 
 ### Exploratory Visualization
 
-![sample](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/sample_vehicle.png)
+![20 vehicle images taken from [GTI](http://www.gti.ssr.upm.es/data/Vehicle_database.html)](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/sample_vehicle.png)
+
+![First 10 rows of labels.csv for annotated images](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/sample_annotation.png)
+
 In this section, you will need to provide some form of visualization that summarizes or extracts a relevant characteristic or feature about the data. The visualization should adequately support the data being used. Discuss why this visualization was chosen and how it is relevant. Questions to ask yourself when writing this section:
 - _Have you visualized a relevant characteristic or feature about the dataset or input data?_
 - _Is the visualization thoroughly analyzed and discussed?_
