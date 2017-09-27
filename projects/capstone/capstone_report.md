@@ -1,10 +1,9 @@
 # Machine Learning Engineer Nanodegree
-## Capstone Project
-Joe Udacity  
-December 31st, 2050
+## Capstone Project: Vehicle Detection using Faster R-CNN and DenseNet
+Hasan Tuncer
+Sep 27, 2017
 
 ## I. Definition
-_(approx. 1-2 pages)_
 
 ### Project Overview
 Self-driving cars are finally becoming real. Their impact on people's live and economy will be tremendous [[1](https://medium.com/startup-grind/mind-blowing-driverless-future-fcc5197d509)]. There are so many interesting challenges come with self-driving car technology. One of them is detection of surrounding objects including other vehicles. This information is necessary to make a right decision such as turning without causing any safety problem. My goal is to create a machine learning pipeline for detecting vehicle(s) on a road from a video. The video is captured by a forward looking camera mounted on a vehicle.
@@ -34,19 +33,18 @@ Vehicle detection is important for public safety and security, surveillance, int
 I will use [average precision (AP)](http://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf) metric. AP is the area under the precision/recall curve. Precision reflects out of all the items labeled as positive, how many truly belong to the positive class. Precision is ratio of true positive instances to the sum of true postive and false positives. Recall reflects out of all the items that are truly positive, how many were correctly classified as positive. Or simply, how many positive items were 'recalled' from the dataset. It is  the ratio of true positive instances to the sum of true positives and false negatives.  
 
 ## II. Analysis
-_(approx. 2-4 pages)_
 
 ### Data Exploration
-To train my object detection model, I will use the labeled data for [vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/vehicles.zip) and [non-vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/non-vehicles.zip) which are retrieved by Udacity from  [GTI vehicle image database](http://www.gti.ssr.upm.es/data/Vehicle_database.html) and [the KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/). The data has two labels: vehicle and non-vehicle. There are around 8800 images at each class. The images are 64x64 pixels, in RGB color space with no Alpha channel and in portable network graphics (PNG) format.
+
+Training data for object detection model is  [annotated images](https://github.com/udacity/self-driving-car/tree/master/annotations) provided by CrowdAI. It contains over 65,000 labels across 9,423 frames (in JPG format) collected from a Point Grey research cameras running at full resolution of 1920x1200 at 2hz. The dataset includes labels for car, truck and pedestrian. I removed the pedestrian label as my goal is not to identify pedestrians but vehicles. Labels.csv retrieved from [download link](http://bit.ly/udacity-annoations-crowdai) has wrong column order which causes an error during cropping object images. So the column order needs to be changed to x_min, y_min, x_max, y_max, Frame, Label, Preview URL.
+ 
+Training data for object classification model is the labeled data for [vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/vehicles.zip) and [non-vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/non-vehicles.zip) which are retrieved by Udacity from  [GTI vehicle image database](http://www.gti.ssr.upm.es/data/Vehicle_database.html) and [the KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/). The data has two classes: vehicle and non-vehicle. There are around 8800 images at each class. The images are 64x64 pixels, in RGB color space with no Alpha channel and in portable network graphics (PNG) format.
 
 Non-vehicle images are extracted from road sequences not containing vehicles. Vehicle images includes high variety of vehicle make, model and color. One important feature affecting the appearance of the vehicle is the position of the vehicle relative to the camera. Therefore,  images are separated in four different regions according to the pose: middle/close range in front of the camera, middle/close range in the left, close/middle range in the right, and far range. In addition, the images are extracted in such a way that they do not perfectly fit the contour of the vehicle in order to make the classifier more robust to offsets in the hypothesis generation stage. Instead, some images contain the vehicle loosely (some background is also included in the image), while others only contain the vehicle partially
 
 I made sure that I have equal number of samples from both vehicle and non-vehicle classes.
 
-To train my object classification model, I will use  [annotated data set](https://github.com/udacity/self-driving-car/tree/master/annotations) provided by CrowdAI. It contains over 65,000 labels across 9,423 frames (in JPG format) collected from a Point Grey research cameras running at full resolution of 1920x1200 at 2hz. The dataset includes labels for car, truck and pedestrian. I removed the pedestrian label as my goal is not to identify pedestrians but vehicles.
- Labels.csv retrieved from [download link](http://bit.ly/udacity-annoations-crowdai) has wrong column order which causes an error during cropping object images. So the column order needs to be changed to x_min, y_min, x_max, y_max, Frame, Label, Preview URL.
-
-I randomize the input images before splitting. I use %80 of data for training %20 for validation.
+I randomize the inputs before splitting them.  %80 of input data is for training while %20 is for validation.
 
 I will run my pipeline on [the test video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/test_video.mp4) provided by Udacity.
 
@@ -54,43 +52,43 @@ I will run my pipeline on [the test video](https://github.com/htuncer/machine-le
 ### Exploratory Visualization
 
 20 vehicle images taken from [GTI](http://www.gti.ssr.upm.es/data/Vehicle_database.html):
+
 ![20 vehicle images taken from [GTI](http://www.gti.ssr.upm.es/data/Vehicle_database.html)](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/sample_vehicle.png)
 
-As seen in the pictures above, there is good variation of colors, make and point of views in the images
+As seen in the pictures above, there is good variation of colors, make and point of views in the images.
 
 
 Sample annotated image:
+
 ![Sample annotated image](https://github.com/udacity/self-driving-car/blob/master/annotations/images/crowdai.png)
 
 
-First 10 rows of labels.csv for annotated images:
-![First 10 rows of labels.csv for annotated images](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/sample_annotation.png)
+First 10 rows of labels.csv for annotated images(https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/annotated_images/labels.csv):
 
-The labels were including annotation for pedestrian. I removed them before training as my goal is not detect pedestrians.
+![First 10 rows of labels.csv for annotated images](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/sample_annotation.png)
 
 
 ### Algorithms and Techniques
-Faster R-CNN will be used for object region detection. DenseNet will be used for classifying if the detected object is a vehicle or not. Both of these models are state-of-the art in object detection and classification. See Domain Background section for details of these models. I will use the pre-trained version of Faster R-CNN and DenseNet because it may take days to train a model from scratch. [Faster R-CNN inception resnetv2](https://github.com/tensorflow/models/blob/master/object_detection/g3doc/detection_model_zoo.md) is pre-trained on [COCO](http://mscoco.org). [DenseNet](https://github.com/liuzhuang13/DenseNet) is pre-trained on [ImageNet](http://www.image-net.org). COCO and ImageNet are large datasets containing thousands of images for hundreds of object types. Faster R-CNN and DenseNet will go through supervised training with vehicle/non-vehicle dataset that I mentioned above. The images in these data sets will be resized to match the image sizes used during pre-train process. I don't expect to make other pre-processing on the images.
+Faster R-CNN will be used for object region detection. DenseNet will be used for classification if the detected object is a vehicle or not. Both of these models are state-of-the art in object detection and classification. See Domain Background section for details of these models. I will use the pre-trained version of Faster R-CNN and DenseNet because it may take days to train a model from scratch. [Faster R-CNN inception resnetv2](https://github.com/tensorflow/models/blob/master/object_detection/g3doc/detection_model_zoo.md) is pre-trained on [COCO](http://mscoco.org). [DenseNet](https://github.com/liuzhuang13/DenseNet) is pre-trained on [ImageNet](http://www.image-net.org). COCO and ImageNet are large datasets containing thousands of images for hundreds of object types. Faster R-CNN and DenseNet will go through supervised training with vehicle/non-vehicle dataset that I mentioned above. The images in these data sets will be resized to match the image sizes used during pre-train process. I don't expect to make other pre-processing on the images.
 
 The trained model will be applied to frames of a video. The output of the model will be converted back as video where vehicles bounded with box and tracked along the way.
 
 
 ### Benchmark
 
-I will use [KITTI benchmark suit](http://www.cvlibs.net/datasets/kitti/eval_object.php), that includes performance comparison of models in vehicle detection scenario.The result of Faster R-CNN has already been noted in [*](http://www.cvlibs.net/datasets/kitti/eval_object_detail.php?&result=3a25efaffca8895ffba2a65a5cbe4254d8dda259)
+I use [KITTI benchmark suit](http://www.cvlibs.net/datasets/kitti/eval_object.php), that includes performance comparison of models in vehicle detection scenario.The result of Faster R-CNN has already been noted in [*](http://www.cvlibs.net/datasets/kitti/eval_object_detail.php?&result=3a25efaffca8895ffba2a65a5cbe4254d8dda259)
 
 
 ## III. Methodology
-_(approx. 3-5 pages)_
 
 ### Data Preprocessing
-#### Object Detection Data
-Tensorflow object detection API accepts inputs in the form of tf records. [create_tf_record.py](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/create_tfrecord.py) converts annotated images in data/annotated_images folder into tf_records. There is annotation data comes with the images is in [labels.csv](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/annotated_images/labels.csv) The order of box coordinates for objects in images were wrong. I had changed it as x_min, y_min, x_max, y_max. I discard objects labeled as pedestrian as my goal is not to detect pedestrians. There are only objects left with two labels left: car and truck. I normalized the box coordinates for each objects. I randomized the inputs before converting them to tf_records. I used 8,000 images to train and 2000 images to validate object detection API performance. I could not use more images due to out of memory or resource exhaustion error at google cloud machine learning engine and google cloud GPU instance. The output is train.record and val.record in data directory. For detailed implementation please see [train.ipynb](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/train.ipynb) I wrote the code as per the instructions [here](https://github.com/tensorflow/models/blob/3bf85a4eddb9c56a28cc266ee4aa5604fb4d8334/object_detection/g3doc/using_your_own_dataset.md)
+#### Processing Data for Object Detection Model
+Tensorflow object detection API accepts inputs in the form of tf records. [create_tf_record.py](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/create_tfrecord.py) converts annotated images in data/annotated_images folder into tf_records. The annotation data comes with the images is [labels.csv](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/annotated_images/labels.csv) The order of box coordinates for objects were wrong. I change it as x_min, y_min, x_max, and y_max. I discard objects labeled as pedestrian as my goal is not to detect pedestrians. There are only objects left with two labels left: car and truck. I normalize the box coordinates for each objects. I randomize the inputs before converting them to tf_records. I use 8,000 images to train and 2000 images to validate object detection API performance. I can not use more images due to out of memory or resource exhaustion error at google cloud machine learning engine and google cloud GPU instance. The output is train.record and val.record in data directory. For detailed implementation please see [train.ipynb](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/train.ipynb) See [my guideline](https://github.com/tensorflow/models/blob/3bf85a4eddb9c56a28cc266ee4aa5604fb4d8334/object_detection/g3doc/using_your_own_dataset.md)
 
 
-The input images are resized as per the image resizing scheme described in the Faster R-CNN paper. We always resizes an image so that the smaller edge is 600 pixels. If the longer edge is greater than 1024 edges, it resizes such that the longer edge is 1024 pixels. The resulting image always has the same aspect ratio as the input image. See [faster_rcnn_gpu.config](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/models/faster_rcnn/faster_rcnn_gpu.config) for details.
+The input images are resized as per the image resizing scheme described in the [Faster R-CNN paper](https://arxiv.org/pdf/1506.01497.pdf). We always resizes an image so that the smaller edge is 600 pixels. If the longer edge is greater than 1024 edges, it resizes such that the longer edge is 1024 pixels. The resulting image always has the same aspect ratio as the input image. See [faster_rcnn_gpu.config](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/models/faster_rcnn/faster_rcnn_gpu.config) for details.
 
-#### Object Classification Data
+#### Processing Data for Object Classification Model
 _load_data_ method in [densenet.py](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/densenet.py) reads all the images into numpy array. CV2 library reads the images in BGR format. Images are resized to 224x224.
 Mean pixel of the images are subtracted to make the dataset compatible with the pre-trained models:
 x[:, :, :, 0] -= 103.939
@@ -103,42 +101,40 @@ My classifier is binary classifier, meaning identifies if object is a vehicle or
 
 ### Implementation
 
-#### Object Detection
-I use the Faster R-CNN implementation of tensorflow object detection API. I used [pre-trained Faster R-CNN inception resnetv2](https://github.com/tensorflow/models/blob/master/object_detection/g3doc/detection_model_zoo.md). Pre-trained model will speed my model training because it may take days to train a model from scratch. The reason of selecting Faster R-CNN is its high accuracy result [[3](https://arxiv.org/abs/1611.10012)].
+#### Implementing Object Detection Model
+I use the Faster R-CNN implementation of tensorflow object detection API. I leverage [pre-trained Faster R-CNN inception resnetv2](https://github.com/tensorflow/models/blob/master/object_detection/g3doc/detection_model_zoo.md). Pre-trained model will speed my model training because it may take days to train a model from scratch. The reason of selecting Faster R-CNN is its high accuracy [result](https://arxiv.org/abs/1611.10012).
 
-I need to configure model before finetuning with my own data set. Therefore, I created  [faster_rcnn_gpu.config](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/models/faster_rcnn/faster_rcnn_gpu.config).
+I need to configure model before finetuning with my own data set. Therefore, I create  [faster_rcnn_gpu.config](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/models/faster_rcnn/faster_rcnn_gpu.config).
 
-Tensorflow accepts class labels in pbtxt file. Hence, I created [data/label_map.pbtxt](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/label_map.pbtxt) as per the instructions [here](https://github.com/tensorflow/models/blob/3bf85a4eddb9c56a28cc266ee4aa5604fb4d8334/object_detection/g3doc/using_your_own_dataset.md)
+Tensorflow accepts class labels in pbtxt file. Hence, I create [data/label_map.pbtxt](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/label_map.pbtxt) as per the instructions [here](https://github.com/tensorflow/models/blob/3bf85a4eddb9c56a28cc266ee4aa5604fb4d8334/object_detection/g3doc/using_your_own_dataset.md)
 
 For evaluation of my model, I use tensorflow object detection api and tensorboard.See [guideline](https://github.com/tensorflow/models/blob/3bf85a4eddb9c56a28cc266ee4aa5604fb4d8334/object_detection/g3doc/running_locally.md)
 All the steps and commands that I used are documented in [train.ipynb](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/train.ipynb) and [inference.ipynb](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/inference.ipynb)
 
-#### Object classification
-I implemented densenet to classify object as per the [DenseNet](https://arxiv.org/pdf/1608.06993.pdf) paper. My implementation of densenet is in [densenet.py](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/densenet.py)
+#### Implementing Object Classification Model
+I implement DenseNet to classify object as per the [DenseNet paper](https://arxiv.org/pdf/1608.06993.pdf). My implementation of DenseNet is in [densenet.py](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/densenet.py)
 I use [pre-trained DenseNet](https://github.com/liuzhuang13/DenseNet) on ImageNet for object classification.
 
 See [train.ipynb](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/train.ipynb) and [inference.ipynb](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/inference.ipynb) for details of my implementation.
 
-For validation of my classification model, I used [average precision](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html) from  sklearn library.
+For validation of my classification model, I use [average precision](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html) from  sklearn library.
 
 ### Refinement
 To train object detection API, I  was initially thinking to use labeled data ([vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/vehicles.zip) and [non-vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/non-vehicles.zip) which are retrieved by Udacity from  [GTI vehicle image database](http://www.gti.ssr.upm.es/data/Vehicle_database.html) and [the KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/) ). I was giving the full size of the image as object coordinates. However, it returned poor performance. Later, I used  [annotated data set](https://github.com/udacity/self-driving-car/tree/master/annotations) provided by CrowdAI. The annotated data set has multiple objects in every objects. It improved the performance of the detection model.
 
-I started first with high number of input images for my model. I either got memory or resource exhaustion error. Even if everything would go well, the training time would take days. Therefore, I started with small number of images like 1000. However, I needed to push to 10000 to increase the performance.
+I started first with high number of input images for my model. I either got memory or resource exhaustion error. Even if everything would go well, the training time would take days. Therefore, I started with small number of images like 1000. However, I needed to push the input size to 10,000 to increase the performance.
 
-For tensorflow object detection API, I tried different learning rate. However, the best performance came with googles original proposal that is the order of 0.0003. See [faster_rcnn_gpu.config](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/models/faster_rcnn/faster_rcnn_gpu.config)
+For tensorflow object detection API, I tried different learning rates. However, the best performance came with googles original proposal that is the order of 0.0003. See [faster_rcnn_gpu.config](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/models/faster_rcnn/faster_rcnn_gpu.config)
 
-Tensorflow object detection API returns both object box coordinates on the image and also the class of the image. However, on top of tensorflow classification, applying densenet classification improves the accuracy.
+Tensorflow object detection API returns both object box coordinates on the image and also the class of the image. However, on top of tensorflow classification, applying DenseNet classification improves the accuracy.
 
-For object classification, I stick to densenet model explanation in densenet paper as it is already state of the art. However, I lowered batch size to fit into my computing instance memory. I increased the number of epochs  to get better performance. The number of images I used for input was very   this section, you will need to discuss the process of improvement you made upon the algorithms and techniques you used in your implementation. For example, adjusting parameters for certain models to acquire improved solutions would fall under the refinement category. Your initial and final solutions should be reported, as well as any significant intermediate results as necessary. Questions to ask yourself when writing this section:
-
+For object classification, I stick to DenseNet model explanation in DenseNet paper as it is already state of the art. However, I lowered batch size to fit into my compute instance memory. I increased the number of epochs  to get better model performance. 
 
 ## IV. Results
-_(approx. 2-3 pages)_
 
 ### Model Evaluation and Validation
 
-Tensorflow object detection API performance is as follows:  
+Finetuned Tensorflow object detection API performance is as follows:  
 INFO:tensorflow:global step 3075: loss = 0.1889 (2.743 sec/step)  
 INFO:tensorflow:global step 3076: loss = 0.1710 (2.662 sec/step)  
 INFO:tensorflow:global step 3077: loss = 0.2426 (2.679 sec/step)  
@@ -156,11 +152,7 @@ INFO:tensorflow:global step 3086: loss = 0.4457 (4.565 sec/step)
 
 The precision score of the object classification model is 0.67839921517
 
-In this section, the final model and any supporting qualities should be evaluated in detail. It should be clear how the final model was derived and why this model was chosen. In addition, some type of analysis should be used to validate the robustness of this model and its solution, such as manipulating the input data or environment to see how the model’s solution is affected (this is called sensitivity analysis). Questions to ask yourself when writing this section:
-- _Is the final model reasonable and aligning with solution expectations? Are the final parameters of the model appropriate?_
-- _Has the final model been tested with various inputs to evaluate whether the model generalizes well to unseen data?_
-- _Is the model robust enough for the problem? Do small perturbations (changes) in training data or the input space greatly affect the results?_
-- _Can results found from the model be trusted?_
+Given the resources challenges (Google cloud is charging every minite :)) and time constraints, I could not improve performance of my models with more inputs and varying parameters. 
 
 ### Justification
 In this section, your model’s final solution and its results should be compared to the benchmark you established earlier in the project using some type of statistical analysis. You should also justify whether these results and the solution are significant enough to have solved the problem posed in the project. Questions to ask yourself when writing this section:
@@ -170,7 +162,6 @@ In this section, your model’s final solution and its results should be compare
 
 
 ## V. Conclusion
-_(approx. 1-2 pages)_
 
 ### Free-Form Visualization
 The output video that shows the detected objects:
@@ -178,13 +169,15 @@ The output video that shows the detected objects:
 
 ### Reflection
 
-Vehicle detection is important for public safety and security, surveillance, intelligent traffic control and autonomous driving.  Self-driving cars need to identify objects around them such as other vehicles on the road. In this problem, the objects are captured as a video by a forward looking camera mounted on a vehicle. I used tensorflow object detection API for detecting the objects in video frames. Then, densenet for classifying the detected objects. Both of the model were pre-trained on large datasets: [COCO](http://mscoco.org) and [ImageNet](http://www.image-net.org). Then, I trained  the models with vehicle and non-vehicle images. Then applied final models is applied on the  test video.
+Vehicle detection is important for public safety and security, surveillance, intelligent traffic control and autonomous driving.  Self-driving cars need to identify objects around them such as other vehicles on the road. In this problem, the objects are captured as a video by a forward looking camera mounted on a vehicle. I used tensorflow object detection API for detecting the objects in video frames. Then, DenseNet for classifying the detected objects. Both of the model were pre-trained on large datasets: [COCO](http://mscoco.org) and [ImageNet](http://www.image-net.org). Then, I trained  the models with vehicle and non-vehicle images. Then applied final models is applied on the  test video.
 
 The first challenge for me the computing resource related problems: less memory, less CPU etc. I was trying to run the models on my macbook. Then, I tried to use Google  Machine Learning Engine. However, I got OOM, out of memory and resource exhaustion errors. I could not find solutions to those problems. Then, I used google cloud platform and GPU instance for the  first time. After having few problems related to GPU and SWAP files, I was able to successfully run the models. I realized how computing heavy is dealing with lots of images.
 
 The second challenge for me was reading the input images and converting them into numpy arrays or the format that each model require. I learned few good things about image coloring formats: BGR, RGB, greyscale and alpha channels etc.
 
 The third challenge for me was to limit the number of objects detected by the tensorflow object detection API. By default it detects at most 100 objects on an image. There may be tens of output boxes that by and large show the borders of the same object. I decided to use only top 10 boxes with highest confidence score because of excessive time needed for inference.
+
+
 
 ### Improvement
 The model can definetely be improved by using at least 2-3 times more image input. I could not use much input resources because of computing resource and time limitations. Further, I could also run training longer. Note that Tensorflow object detection API is fine tuned on pet data in COCO by running the model 200K steps.
