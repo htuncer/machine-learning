@@ -25,66 +25,14 @@ from keras.models import model_from_json
 import time
 import datetime
 
-def yo(img_rows, img_cols):
-    (X_train, Y_train), (X_valid, Y_valid) = cifar10.load_data()
-    nb_train_samples = 2  # 3000 training samples
-    nb_valid_samples = 2  # 100 validation samples
-    num_classes = 10
-
-    # Resize trainging images
-    if K.image_dim_ordering() == 'th':
-        X_train = np.array([cv2.resize(img.transpose(1, 2, 0), (img_rows, img_cols)).transpose(
-            2, 0, 1) for img in X_train[:nb_train_samples, :, :, :]])
-        X_valid = np.array([cv2.resize(img.transpose(1, 2, 0), (img_rows, img_cols)).transpose(
-            2, 0, 1) for img in X_valid[:nb_valid_samples, :, :, :]])
-    else:
-        X_train = np.array([cv2.resize(img, (img_rows, img_cols))
-                            for img in X_train[:nb_train_samples, :, :, :]])
-        X_valid = np.array([cv2.resize(img, (img_rows, img_cols))
-                            for img in X_valid[:nb_valid_samples, :, :, :]])
-
-    print("\n\n image\n\nShape:%s\n\n%s\n\n" % (X_train.shape, type(X_train)))
-
-    print('Y_train1 shape %s\nY_train[0]=> %s' % (Y_train.shape, Y_train[0]))
-    # Transform targets to keras compatible format
-    Y_train = np_utils.to_categorical(Y_train[:nb_train_samples], num_classes)
-    Y_valid = np_utils.to_categorical(Y_valid[:nb_valid_samples], num_classes)
-    print('Y_train2 shape %s\n Y_train2[0]=> %s' % (Y_train.shape, Y_train[0]))
-    return X_train, Y_train, X_valid, Y_valid
-
-
-def load_data1(img_rows, img_cols):
-    num_classes = 2
-    img1 = cv2.resize(cv2.imread('data/labeled_images/image0839.png'),
-                      (img_rows, img_cols)).astype(np.float32)
-    #img2 = cv2.resize(cv2.imread('data/labeled_images/vehicle/GTI_Far/image0002.png'),
-    #                  (img_rows, img_cols)).astype(np.float32)
-    #img3 = cv2.resize(cv2.imread('data/labeled_images/vehicle/GTI_Far/image0003.png'),
-    #                  (img_rows, img_cols)).astype(np.float32)
-
-    print("1 img size: %s"%sys.getsizeof(img1))
-    sys.exit(-1)
-    for x in (img1, img2, img3):
-        x[:, :, 0] -= 103.939
-        x[:, :, 1] -= 116.779
-        x[:, :, 2] -= 123.68
-
-    X_train = np.array([img1, img2])
-    X_valid = np.array([img3])
-
-    Y_train = np.array([[0], [0]])
-    Y_valid = np.array([[0]])
-
-    # Transform targets to keras compatible format
-    Y_train = np_utils.to_categorical(Y_train, num_classes)
-    Y_valid = np_utils.to_categorical(Y_valid, num_classes)
-
-    return X_train, Y_train, X_valid, Y_valid
 
 def load_data(img_rows, img_cols):
+    '''
+    input: image width and heigth
+    Collects input images, transforms and randomizes them
+    returns training and validation data and labels.
+    '''
     num_classes = 2
-    # vehicles 8792
-    # non-vehicles 8968
     re_path = "%s/data/labeled_images/vehicles/*/*.png" % os.getcwd()
     vehicles = tf.gfile.Glob(re_path)  # f has list of file paths
     print("vehicles %s" % len(vehicles))
@@ -145,7 +93,6 @@ def densenet_model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth_ra
     Model Schema is based on
     https://github.com/flyyufelix/DenseNet-Keras
     ImageNet Pretrained Weights
-    Theano: https://drive.google.com/open?id=0Byy2AcGyEVxfVnlCMlBGTDR3RGs
     TensorFlow: https://drive.google.com/open?id=0Byy2AcGyEVxfUDZwVjU2cFNidTA
     # Arguments
         nb_dense_block: number of dense blocks to add to end
@@ -164,14 +111,11 @@ def densenet_model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth_ra
     # compute compression factor
     compression = 1.0 - reduction
 
-    # Handle Dimension Ordering for different backends
+
     global concat_axis
-    if K.image_dim_ordering() == 'tf':
-        concat_axis = 3
-        img_input = Input(shape=(224, 224, 3), name='data')
-    else:
-        concat_axis = 1
-        img_input = Input(shape=(3, 224, 224), name='data')
+    concat_axis = 3
+    img_input = Input(shape=(224, 224, 3), name='data')
+
 
     # From architecture for ImageNet (Table 1 in the paper)
     nb_filter = 96
@@ -207,7 +151,7 @@ def densenet_model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth_ra
     x = Activation('relu', name='relu' + str(final_stage) + '_blk')(x)
 
     x_fc = GlobalAveragePooling2D(name='pool' + str(final_stage))(x)
-    # HASAN 1000 to num_classes
+
     if weights_path is None:
         x_fc = Dense(1000, name='fc6')(x_fc)
     else:
@@ -216,10 +160,8 @@ def densenet_model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth_ra
 
     model = Model(img_input, x_fc, name='densenet')
 
-    if weights_path is None and K.image_dim_ordering() == 'th':
-        # Use pre-trained weights for Theano backend
-        weights_path = 'data/densenet_weights_th.h5'
-    elif weights_path is None:
+
+    if weights_path is None:
         # Use pre-trained weights for Tensorflow backend
         weights_path = 'data/densenet161_weights_tf.h5'
 
@@ -237,7 +179,7 @@ def densenet_model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth_ra
     # Learning rate is changed to 0.001
     sgd = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
     model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
-
+    print('DenseNet Model is Compiled')
     return model
 
 
@@ -343,13 +285,13 @@ if __name__ == '__main__':
     batch_size = 1
     nb_epoch = 10
 
-    print('\n\n\n\ngetting data')
-    X_train, Y_train, X_valid, Y_valid = load_data(img_rows, img_cols)
-
     # Load our model
     print('\n\n\n\nCreating model')
     model = densenet_model(img_rows=img_rows, img_cols=img_cols,
                               color_type=channel, num_classes=num_classes)
+
+    print('\n\n\n\ngetting data')
+    X_train, Y_train, X_valid, Y_valid = load_data(img_rows, img_cols)
 
     # Start Fine-tuning
     print('\n\n\n\ntraining model')
