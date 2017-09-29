@@ -133,32 +133,12 @@ For object classification, I stick to DenseNet model explanation in DenseNet pap
 ## IV. Results
 
 ### Model Evaluation and Validation
+I ran  my object detection model, Faster R-CNN, about 3K steps with a batch size of 1. The total loss value per steps of running Faster R-CNN is shown in the diagram below. The total loss value  decreases pretty fast from 1.2 to 0.2. The reason of this decline is using pre-trained model. Having low total loss is indication of good performance
+![Faster R-CNN total lost](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/faster_rcnn_total_lost_result.png)
+ 
+On the other hand, I ran my object classification model with 10 epochs and batch size of 1. the average precision score of my object classification model is 0.67839921517. Average precision result ccan get max. of 1. 0.67 is not great performance result and it is lower than the results posted on [the KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/)
 
-Finetuned Tensorflow object detection API performance is as follows:  
-INFO:tensorflow:global step 3075: loss = 0.1889 (2.743 sec/step)  
-INFO:tensorflow:global step 3076: loss = 0.1710 (2.662 sec/step)  
-INFO:tensorflow:global step 3077: loss = 0.2426 (2.679 sec/step)  
-INFO:tensorflow:global step 3078: loss = 0.1581 (2.640 sec/step)  
-INFO:tensorflow:global step 3079: loss = 0.2633 (2.699 sec/step)  
-INFO:tensorflow:global step 3080: loss = 0.4595 (2.831 sec/step)  
-INFO:tensorflow:global step 3081: loss = 0.0734 (2.837 sec/step)  
-INFO:tensorflow:global step 3082: loss = 0.1226 (2.699 sec/step)  
-INFO:tensorflow:global step 3083: loss = 0.1339 (2.796 sec/step)  
-INFO:tensorflow:Saving checkpoint to path models/faster_rcnn/train/model.ckpt  
-INFO:tensorflow:global step 3084: loss = 0.1522 (3.020 sec/step)  
-INFO:tensorflow:Recording summary at step 3084.  
-INFO:tensorflow:global step 3085: loss = 0.2716 (14.013 sec/step)  
-INFO:tensorflow:global step 3086: loss = 0.4457 (4.565 sec/step)  
-
-The precision score of the object classification model is 0.67839921517
-
-Given the resources challenges (Google cloud is charging every minite :)) and time constraints, I could not improve performance of my models with more inputs and varying parameters. 
-
-### Justification
-In this section, your model’s final solution and its results should be compared to the benchmark you established earlier in the project using some type of statistical analysis. You should also justify whether these results and the solution are significant enough to have solved the problem posed in the project. Questions to ask yourself when writing this section:
-- _Are the final results found stronger than the benchmark result reported earlier?_
-- _Have you thoroughly analyzed and discussed the final solution?_
-- _Is the final solution significant enough to have solved the problem?_
+Given the computing resources challenges (Google cloud is charging every minite :)) and time constraints, I could not improve performance of my models with more inputs. 
 
 
 ## V. Conclusion
