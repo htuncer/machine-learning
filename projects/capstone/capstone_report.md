@@ -144,18 +144,22 @@ Given the computing resources challenges (Google cloud is charging every minite 
 ## V. Conclusion
 
 ### Free-Form Visualization
-The output video that shows the detected objects:
+I applied the final model on [the video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/test_video.mp4). The [output video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/out_video.mp4) is as follows:
+![output video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/out_video.mp4)
 
+As you will see in the video, there are some false positives and false negatives. Tensorflow object detection API returns many object boxes even for the same object. I applied non max supression. Among many factors, depending on the number of output we would like to get from  non max supression and value for iou_threshold, the number of false positives and false negatives changes.
 
 ### Reflection
 
 Vehicle detection is important for public safety and security, surveillance, intelligent traffic control and autonomous driving.  Self-driving cars need to identify objects around them such as other vehicles on the road. In this problem, the objects are captured as a video by a forward looking camera mounted on a vehicle. I used tensorflow object detection API for detecting the objects in video frames. Then, DenseNet for classifying the detected objects. Both of the model were pre-trained on large datasets: [COCO](http://mscoco.org) and [ImageNet](http://www.image-net.org). Then, I trained  the models with vehicle and non-vehicle images. Then applied final models is applied on the  test video.
 
-The first challenge for me the computing resource related problems: less memory, less CPU etc. I was trying to run the models on my macbook. Then, I tried to use Google  Machine Learning Engine. However, I got OOM, out of memory and resource exhaustion errors. I could not find solutions to those problems. Then, I used google cloud platform and GPU instance for the  first time. After having few problems related to GPU and SWAP files, I was able to successfully run the models. I realized how computing heavy is dealing with lots of images.
+The first challenge for me the computing resource related problems: less memory, less CPU etc. I was trying to run the models on my macbook. Then, I tried to use Google  Machine Learning Engine. However, I got OOM, out of memory and resource exhaustion errors. I could not find solutions to those problems. Then, I used google cloud platform and GPU instance for the  first time. After having few problems related to GPU and SWAP files, I was able to successfully run the models. I realized how computing intensive is dealing with lots of images. Further it also takes great time to compute and slows down progress on the project.
 
 The second challenge for me was reading the input images and converting them into numpy arrays or the format that each model require. I learned few good things about image coloring formats: BGR, RGB, greyscale and alpha channels etc.
 
-The third challenge for me was to limit the number of objects detected by the tensorflow object detection API. By default it detects at most 100 objects on an image. There may be tens of output boxes that by and large show the borders of the same object. I decided to use only top 10 boxes with highest confidence score because of excessive time needed for inference.
+The third challenge for me was to limit the number of objects detected by the tensorflow object detection API. By default it detects at most 100 objects on an image. There may be tens of output boxes that by and large show the borders of the same object. I find out tensorflow non max supression method to decrease the number of the boxes. However, depending on the number of output we would like to get from  non max supression and the value of iou_threshold, the number of false positives and false negatives changes.
+
+Working on two models: Faster R-CNN and DenseNet required so much effort because, I was executing the whole machine learning cycle (data creation, model creation, tuning, validation/evalution, saving etc.) two times for each model. This was extremely time consuming. However at the end I learned so many new things and I appreciate the knowledge.
 
 
 
