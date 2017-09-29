@@ -135,7 +135,7 @@ while(cap.isOpened()):
                   [boxes, scores, classes, num_detections],
                   feed_dict={image_tensor: image_np_expanded})
 
-                max_output_size = 3
+                max_output_size = 5
                 iou_threshold =0.5
                 #,iou_threshold=iou_threshold
                 #print("scores %s"%scores[0])
