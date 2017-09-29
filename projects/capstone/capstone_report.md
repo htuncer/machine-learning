@@ -144,8 +144,8 @@ Given the computing resources challenges (Google cloud is charging every minite 
 ## V. Conclusion
 
 ### Free-Form Visualization
-I applied the final model on [the video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/test_video.mp4). The [output video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/out_video.mp4) is as follows:
-![output video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/out_video.mp4)
+I applied the final model on [the video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/test_video.mp4). The [output video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/out_video.mov) is as follows:
+![output video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/out_video.mov)
 
 As you will see in the video, there are some false positives and false negatives. Tensorflow object detection API returns many object boxes even for the same object. I applied non max supression. Among many factors, depending on the number of output we would like to get from  non max supression and value for iou_threshold, the number of false positives and false negatives changes.
 
