@@ -30,14 +30,16 @@ Vehicle detection is important for public safety and security, surveillance, int
 
 
 ### Metrics
-I will use [average precision (AP)](http://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf) metric. AP is the area under the precision/recall curve. Precision reflects out of all the items labeled as positive, how many truly belong to the positive class. Precision is ratio of true positive instances to the sum of true postive and false positives. Recall reflects out of all the items that are truly positive, how many were correctly classified as positive. Or simply, how many positive items were 'recalled' from the dataset. It is  the ratio of true positive instances to the sum of true positives and false negatives.  
+I will use [average precision (AP)](http://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf) metric. AP is the area under the precision/recall curve. Precision reflects out of all the items labeled as positive, how many truly belong to the positive class. Precision is ratio of true positive instances to the sum of true positive and false positives. Recall reflects out of all the items that are truly positive, how many were correctly classified as positive. Or simply, how many positive items were 'recalled' from the dataset. It is  the ratio of true positive instances to the sum of true positives and false negatives.  
+
+The reason that I pick average precision: In my model I will query if the object is vehicle or not. I don't have multiple object classes.  The precision at every correct point is: how many correct vehicle images have been encountered up to this point (including current) divided by the total images seen up to this point. The reason of not using mean average precision (most used metric in object detection studies) is that I do not multiple object classes hence no multiple queries on the model.
 
 ## II. Analysis
 
 ### Data Exploration
 
 Training data for object detection model is  [annotated images](https://github.com/udacity/self-driving-car/tree/master/annotations) provided by CrowdAI. It contains over 65,000 labels across 9,423 frames (in JPG format) collected from a Point Grey research cameras running at full resolution of 1920x1200 at 2hz. The dataset includes labels for car, truck and pedestrian. I removed the pedestrian label as my goal is not to identify pedestrians but vehicles. Labels.csv retrieved from [download link](http://bit.ly/udacity-annoations-crowdai) has wrong column order which causes an error during cropping object images. So the column order needs to be changed to x_min, y_min, x_max, y_max, Frame, Label, Preview URL.
- 
+
 Training data for object classification model is the labeled data for [vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/vehicles.zip) and [non-vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/non-vehicles.zip) which are retrieved by Udacity from  [GTI vehicle image database](http://www.gti.ssr.upm.es/data/Vehicle_database.html) and [the KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/). The data has two classes: vehicle and non-vehicle. There are around 8800 images at each class. The images are 64x64 pixels, in RGB color space with no Alpha channel and in portable network graphics (PNG) format.
 
 Non-vehicle images are extracted from road sequences not containing vehicles. Vehicle images includes high variety of vehicle make, model and color. One important feature affecting the appearance of the vehicle is the position of the vehicle relative to the camera. Therefore,  images are separated in four different regions according to the pose: middle/close range in front of the camera, middle/close range in the left, close/middle range in the right, and far range. In addition, the images are extracted in such a way that they do not perfectly fit the contour of the vehicle in order to make the classifier more robust to offsets in the hypothesis generation stage. Instead, some images contain the vehicle loosely (some background is also included in the image), while others only contain the vehicle partially
@@ -51,21 +53,35 @@ I will run my pipeline on [the test video](https://github.com/htuncer/machine-le
 
 ### Exploratory Visualization
 
-20 vehicle images taken from [GTI](http://www.gti.ssr.upm.es/data/Vehicle_database.html):
+20 vehicle images taken from [GTI](http://www.gti.ssr.upm.es/data/Vehicle_database.html). As seen in the pictures below, there is good variation of colors, make and point of views in the images.
 
-![20 vehicle images taken from [GTI](http://www.gti.ssr.upm.es/data/Vehicle_database.html)](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/sample_vehicle.png)
-
-As seen in the pictures above, there is good variation of colors, make and point of views in the images.
+![20 vehicle [images](http://www.gti.ssr.upm.es/data/Vehicle_database.html)](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/sample_vehicle.png) taken from ![GTI](data/report_artifacts/sample_vehicle.png)
 
 
-Sample annotated image:
+Vehicle position/distance to camera is in varying ranges and not equally distributed as seen below. It would be better if they were equally distributed.I won't remove the images to balance the distribution because my goal is to have as many input as possible to train my model. Unfortunately, I don't have distribution of the images retrieved from KITTI that is 5966 images.
 
-![Sample annotated image](https://github.com/udacity/self-driving-car/blob/master/annotations/images/crowdai.png)
+![hist](/data/report_artifacts/labeled_img_hist.png)
 
 
-First 10 rows of labels.csv for annotated images(https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/annotated_images/labels.csv):
 
-![First 10 rows of labels.csv for annotated images](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/sample_annotation.png)
+
+
+Sample annotated image from CrowdAI database that is used for object detection is as follows:
+
+![Sample annotated image](data/report_artifacts/sample_crowdai.png)
+
+As seen in the image, there may be boxes which are well exceeding the object boundaries. See the truck on the left and close to the camera. This may led object detection model to behave the same.
+
+
+
+First 10 rows of [labels.csv](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/annotated_images/labels.csv) for annotated images is below
+
+![First 10 rows of labels.csv for annotated images](data/report_artifacts/sample_annotation.png)
+
+As seen in the the statistics of the labels.csv, there are 66389 annotations in total. I calculated the area of the object boxes (in unit of pixel square). There is high variation of the areas of object boxes which may reflect high variation of the position of the vehicles to the camera or the vehicle size.
+![](/data/report_artifacts/annotation_describe.png)
+Out of 66389 annotations 94.24% of them  belong to cars rest is Truck. This reflect the real world scenario where we happen to see cars a lot more compared to Trucks. All these annotations are on 9420 images in total.
+
 
 
 ### Algorithms and Techniques
@@ -128,17 +144,17 @@ For tensorflow object detection API, I tried different learning rates. However, 
 
 Tensorflow object detection API returns both object box coordinates on the image and also the class of the image. However, on top of tensorflow classification, applying DenseNet classification improves the accuracy.
 
-For object classification, I stick to DenseNet model explanation in DenseNet paper as it is already state of the art. However, I lowered batch size to fit into my compute instance memory. I increased the number of epochs  to get better model performance. 
+For object classification, I stick to DenseNet model explanation in DenseNet paper as it is already state of the art. However, I lowered batch size to fit into my compute instance memory. I increased the number of epochs  to get better model performance.
 
 ## IV. Results
 
 ### Model Evaluation and Validation
 I ran  my object detection model, Faster R-CNN, about 3K steps with a batch size of 1. The total loss value per steps of running Faster R-CNN is shown in the diagram below. The total loss value  decreases pretty fast from 1.2 to 0.2. The reason of this decline is using pre-trained model. Having low total loss is indication of good performance
 ![Faster R-CNN total lost](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/faster_rcnn_total_lost_result.png)
- 
+
 On the other hand, I ran my object classification model with 10 epochs and batch size of 1. the average precision score of my object classification model is 0.67839921517. Average precision result ccan get max. of 1. 0.67 is not great performance result and it is lower than the results posted on [the KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/)
 
-Given the computing resources challenges (Google cloud is charging every minite :)) and time constraints, I could not improve performance of my models with more inputs. 
+Given the computing resources challenges (Google cloud is charging every minite :)) and time constraints, I could not improve performance of my models with more inputs.
 
 
 ## V. Conclusion
@@ -153,7 +169,7 @@ As you will see in the video, there are some false positives and false negatives
 
 Vehicle detection is important for public safety and security, surveillance, intelligent traffic control and autonomous driving.  Self-driving cars need to identify objects around them such as other vehicles on the road. In this problem, the objects are captured as a video by a forward looking camera mounted on a vehicle. I used tensorflow object detection API for detecting the objects in video frames. Then, DenseNet for classifying the detected objects. Both of the model were pre-trained on large datasets: [COCO](http://mscoco.org) and [ImageNet](http://www.image-net.org). Then, I trained  the models with vehicle and non-vehicle images. Then applied final models is applied on the  test video.
 
-Working on two models: Faster R-CNN and DenseNet required so much effort because, I was executing the whole machine learning cycle (data creation, model creation, tuning, validation/evalution, saving etc.) two times for each model. This was extremely time consuming. However at the end I learned so many new things and I appreciate the knowledge. This capstone project may be considered just a proof of concept.  It helped me to realize how hard it can be to make a production ready system. 
+Working on two models: Faster R-CNN and DenseNet required so much effort because, I was executing the whole machine learning cycle (data creation, model creation, tuning, validation/evalution, saving etc.) two times for each model. This was extremely time consuming. However at the end I learned so many new things and I appreciate the knowledge. This capstone project may be considered just a proof of concept.  It helped me to realize how hard it can be to make a production ready system.
 
 The first challenge for me the computing resource related problems: less memory, less CPU etc. I was trying to run the models on my macbook. Then, I tried to use Google  Machine Learning Engine. However, I got OOM, out of memory and resource exhaustion errors. I could not find solutions to those problems. Then, I used google cloud platform and GPU instance for the  first time. After having few problems related to GPU and SWAP files, I was able to successfully run the models. I realized how computing intensive is dealing with lots of images. Further it also takes great time to compute and slows down progress on the project.
 
