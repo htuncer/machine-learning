@@ -70,6 +70,7 @@ Sample annotated image from CrowdAI database that is used for object detection i
 
 ![Sample annotated image](data/report_artifacts/sample_crowdai.png)
 
+
 As seen in the image, there may be boxes which are well exceeding the object boundaries. See the truck on the left and close to the camera. This may led object detection model to behave the same.
 
 
@@ -80,6 +81,7 @@ First 10 rows of [labels.csv](https://github.com/htuncer/machine-learning/blob/m
 
 As seen in the the statistics of the labels.csv, there are 66389 annotations in total. I calculated the area of the object boxes (in unit of pixel square). There is high variation of the areas of object boxes which may reflect high variation of the position of the vehicles to the camera or the vehicle size.
 ![](/data/report_artifacts/annotation_describe.png)
+
 Out of 66389 annotations 94.24% of them  belong to cars rest is Truck. This reflect the real world scenario where we happen to see cars a lot more compared to Trucks. All these annotations are on 9420 images in total.
 
 
@@ -118,6 +120,11 @@ My classifier is binary classifier, meaning identifies if object is a vehicle or
 ### Implementation
 
 #### Implementing Object Detection Model
+I use  [google tensorflow object detection api](https://github.com/tensorflow/models/tree/master/research/object_detection) to detect vehicle on image. Therefore, I added it as sub-repo to my github project. Then, I added the libraries to my python path by running the following command in _tf_models_ directory:
+
+$export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
+
+
 I use the Faster R-CNN implementation of tensorflow object detection API. I leverage [pre-trained Faster R-CNN inception resnetv2](https://github.com/tensorflow/models/blob/master/object_detection/g3doc/detection_model_zoo.md). Pre-trained model will speed my model training because it may take days to train a model from scratch. The reason of selecting Faster R-CNN is its high accuracy [result](https://arxiv.org/abs/1611.10012).
 
 I need to configure model before finetuning with my own data set. Therefore, I create  [faster_rcnn_gpu.config](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/models/faster_rcnn/faster_rcnn_gpu.config).
