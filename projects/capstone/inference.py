@@ -98,9 +98,10 @@ classification_model = densenet_model(img_rows=densenet_img_rows, img_cols=dense
 
 
 #input video
-cap = cv2.VideoCapture('data/videos/test_video.mp4')
+#cap = cv2.VideoCapture('data/videos/test_video.mp4')
+cap = cv2.VideoCapture('data/videos/project2.mp4')
 #output video
-video = cv2.VideoWriter('data/out_video.avi',-1,100,(1280,720))
+video = cv2.VideoWriter('data/out_project2.avi',-1,60,(1280,720))
 
 #fourcc = cv2.VideoWriter_fourcc(*'XVID')
 #video = cv2.VideoWriter("output12.avi", fourcc, 20.0, (1280,720))
@@ -135,7 +136,7 @@ while(cap.isOpened()):
                   [boxes, scores, classes, num_detections],
                   feed_dict={image_tensor: image_np_expanded})
 
-                max_output_size = 4
+                max_output_size = 5
                 iou_threshold =0.5
                 #,iou_threshold=iou_threshold
                 #print("scores %s"%scores[0])
