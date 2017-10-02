@@ -16,7 +16,7 @@ There are two main data types used for detecting objects in self-driving car dom
 
 In this project, I will follow the first approach due to extensive data and benchmark resources.
 
-Detecting an object from an image is one of the main reaseach areas of computer vision. Deformable part models (DPMs) and convolutional neural networks (CNNs) are two widely used distinct approaches. DPM are graphical models (Markov random fields) and use an image scanning technique, such as sliding window approach where the classifier such as SVM is run at evenly spaced locations on the image. CNNs are nonlinear classfiers. CNNs are more popular due to their good performance on object detection [[2](https://arxiv.org/pdf/1409.5403.pdf)].
+Detecting an object from an image is one of the main reasearch areas of computer vision. Deformable part models (DPMs) and convolutional neural networks (CNNs) are two widely used distinct approaches. DPM are graphical models (Markov random fields) and use an image scanning technique, such as sliding window approach where the classifier such as SVM is run at evenly spaced locations on the image. CNNs are nonlinear classifiers. CNNs are more popular due to their good performance on object detection [[2](https://arxiv.org/pdf/1409.5403.pdf)].
 
 
 Region-based convolutional neural networks ([R-CNN](https://arxiv.org/abs/1311.2524)) trains CNNs end-to-end to classify the proposed regions into object categories or background. R-CNN deploys region proposal algorithms (such as [EdgeBoxes](https://www.microsoft.com/en-us/research/publication/edge-boxes-locating-object-proposals-from-edges/) and [Selective Search](https://www.koen.me/research/pub/vandesande-iccv2011.pdf)) to select the region in pre-processing step before running the CNN as classifier. [Faster R-CNN](https://arxiv.org/pdf/1506.01497.pdf) uses CNN both for the region proposal and also for the prediction. [Google Inception](https://arxiv.org/abs/1409.4842) uses Faster R-CNN with [ResNet](https://arxiv.org/abs/1512.03385). On the other hand, recently published [DenseNet](https://arxiv.org/pdf/1608.06993.pdf) outperforms ResNet. [YOLO](https://arxiv.org/abs/1506.02640) solves region proposal and associated class probabilities with a single neural network. [Single Shot Multibox Detector](https://arxiv.org/abs/1512.02325) also accomplishes  region proposal generation, feature resampling stage and inference with a single deep neural network.  SSD's key feature is the use of multi-scale convolutional bounding box outputs attached to multiple feature sets for prediction. YOLO and Faster R-CNN use single set of feature set for prediction. SSD processing time is shorter than YOLO and Faster R-CNN.
@@ -26,7 +26,7 @@ Region-based convolutional neural networks ([R-CNN](https://arxiv.org/abs/1311.2
 
 ### Problem Statement
 
-Vehicle detection is important for public safety and security, surveillance, intelligent traffic control and autonomous driving.  Self-driving cars need to identify objects around them such as other vehicles on the road. In this problem, the objects are captured as a video by a forward looking camera mounted on a vehicle. Identification of a vehicle will be important factor in deciding the next action that self-driving car will take such as changing lane. It is a challenging problem due to the large variations in appearance and camera viewpoint, wheather, lightening and occlusions. From machine learning perspective, this problem is a classification problem rather than regression. My goal is to differentiate the objects on the road from the background, sky, hill, or road. Then classify if they are vehicle or not. The output will also be a video similar to the input.  However,  other vehicles in the video will be shown in box and tracked along the way.
+Vehicle detection is important for public safety and security, surveillance, intelligent traffic control and autonomous driving.  Self-driving cars need to identify objects around them such as other vehicles on the road. In this problem, the objects are captured as a video by a forward looking camera mounted on a vehicle. Identification of a vehicle will be important factor in deciding the next action that self-driving car will take such as changing lane. It is a challenging problem due to the large variations in appearance and camera viewpoint, weather, lightening and occlusions. From machine learning perspective, this problem is a classification problem rather than regression. My goal is to differentiate the objects on the road from the background, sky, hill, or road. Then classify if they are vehicle or not. The output will also be a video similar to the input.  However,  other vehicles in the video will be shown in box and tracked along the way.
 
 
 ### Metrics
@@ -115,12 +115,12 @@ x[:, :, :, 2] -= 123.68
 
 All the images are shuffled. %70 of them used for training %30 used for validation.
 
-My classifier is binary classifier, meaning identifies if object is a vehicle or not. The number of classes(or labels) is set to two. Non-vechicle images got class 0 while vehicle images got class 1 tag.
+My classifier is binary classifier, meaning identifies if object is a vehicle or not. The number of classes(or labels) is set to two. Non-vehicle images got class 0 while vehicle images got class 1 tag.
 
 ### Implementation
 
 #### Implementing Object Detection Model
-I use  [google tensorflow object detection api](https://github.com/tensorflow/models/tree/master/research/object_detection) to detect vehicle on image. Therefore, I add it as sub-repo to my github project. Then, I add the libraries to my python path by running the following command in _tf_models_ directory:
+I use  [google Tensorflow object detection api](https://github.com/tensorflow/models/tree/master/research/object_detection) to detect vehicle on image. Therefore, I add it as sub-repo to my github project. Then, I add the libraries to my python path by running the following command in _tf_models_ directory:
 
 $export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
 
@@ -128,10 +128,10 @@ Training an object detection model from scratch requires huge computational reso
 
 Tensorflow accepts class labels in pbtxt file. Hence, I create [data/label_map.pbtxt](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/label_map.pbtxt) as per the instructions [here](https://github.com/tensorflow/models/blob/3bf85a4eddb9c56a28cc266ee4aa5604fb4d8334/object_detection/g3doc/using_your_own_dataset.md)
 
-I need to configure the model before finetuning with my own data set. Therefore, I create  [faster_rcnn_gpu.config](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/models/faster_rcnn/faster_rcnn_gpu.config). Make sure you set num_classes as per the classes your model will detect. In my case, it is 2: car and truck. Then you need to set paths for:
+I need to configure the model before fine-tuning with my own data set. Therefore, I create  [faster_rcnn_gpu.config](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/models/faster_rcnn/faster_rcnn_gpu.config). Make sure you set num_classes as per the classes your model will detect. In my case, it is 2: car and truck. Then you need to set paths for:
 
 - fine_tune_checkpoint: the directory where you have the pre-trained model.
-- input_path: the path for your training record,train.record
+- input_path: the path for your training record, train.record.
 - label_map_path: the path for label_map.pbtxt
 
 You can keep the rest of the config file as it is.
@@ -147,7 +147,7 @@ Meanwhile, run the following command to evaluate the trained model:
 
 python tf_models/object_detection/eval.py --logtostderr --pipeline_config_path=models/faster_rcnn/faster_rcnn_gpu.config --checkpoint_dir=models/faster_rcnn/train/ --eval_dir=models/faster_rcnn/eval/
 
-Few minutes later, run the following command to see the evaluation results on the tensorboard.
+Few minutes later, run the following command to see the evaluation results on the Tensorboard.
 
 tensorboard —logdir models/faster_rcnn/
 
@@ -155,7 +155,7 @@ If you are satisfied with the performance of the model, then We need to export a
 
 python tf_models/object_detection/export_inference_graph.py --input_type image_tensor --pipeline_config_path models/faster_rcnn/faster_rcnn_gpu.config  --trained_checkpoint_prefix models/faster_rcnn/train/model.ckpt-3084 --output_directory models/faster_rcnn/output
 
-Remember to give the highest number for model.ckpt in the directory. After successfull execution of the command, you should see the following files in models/faster_rcnn/outpu:
+Remember to give the highest number for model.ckpt in the directory. After succesful execution of the command, you should see the following files in models/faster_rcnn/outpu:
 tuncer@ins1:~/machine-learning/projects/capstone$ ls -lh models/faster_rcnn/output/
 total 465M
 -rw-rw-r-- 1 tuncer tuncer 77 Sep 22 02:45 checkpoint
@@ -167,10 +167,10 @@ drwxr-xr-x 3 tuncer tuncer 4.0K Sep 22 02:46 saved_model
 
 Now, it is time to do inference on the video frames. I upload the previously trained model using tf.Graph(). See [inference.ipynb]((https://github.com/htuncer/machine-learning/blob/master/projects/capstone/inference.ipynb)). When you run the prediction on the model, the output will be boxes that includes coordinates of an object in the form of [y_min, x_min, y_max, x_max]. Keep in mind that the values of coordinates are normalized. For each box, you will see corresponding class value and confidence score for the prediction in classes and scores variables.
 
-The model detects 100 object at max, you can change the value in faster_rcnn_gpu.config file if you want it to be something different. There may be tens of output boxes that by and large show the borders of the same object. I find out tensorflow non max supression method to decrease the number of the boxes. However, depending on the number of output we would like to get from  non max supression and the value of iou_threshold, the number of false positives and false negatives changes
+The model detects 100 object at max, you can change the value in faster_rcnn_gpu.config file if you want it to be something different. There may be tens of output boxes that by and large show the borders of the same object. I find out Tensorflow non max suppression method to decrease the number of the boxes. However, depending on the number of output we would like to get from  non max suppression and the value of iou_threshold, the number of false positives and false negatives changes
 
 
-For evaluation of my model, I use tensorflow object detection api and tensorboard.See [guideline](https://github.com/tensorflow/models/blob/3bf85a4eddb9c56a28cc266ee4aa5604fb4d8334/object_detection/g3doc/running_locally.md)
+For evaluation of my model, I use Tensorflow object detection api and Tensorboard. See [guideline](https://github.com/tensorflow/models/blob/3bf85a4eddb9c56a28cc266ee4aa5604fb4d8334/object_detection/g3doc/running_locally.md)
 All the steps and commands that I used are documented in [train.ipynb](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/train.ipynb) and [inference.ipynb](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/inference.ipynb)
 
 #### Implementing Object Classification Model
@@ -191,7 +191,7 @@ See [train.ipynb](https://github.com/htuncer/machine-learning/blob/master/projec
 
 For validation of my classification model, I use [average precision](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html) from  sklearn library. It's pretty straight forward, the method accepts valid Y values and predicted values for validation set. The output is a floating number between 0 and 1.
 
-Make sure that you are not running object detection and classification models at the same time. Both of the models are using tensoflow. They try to allocate all the memory in the GPU from the very beginning. Not to face with memory problems, I increased the swap file to 50 GB. The machine I used in Google Cloud is n1-standard-4 (4 vCPUs, 15 GB memory) with 1 GPU  that is NVIDIA Tesla K80). It took few hours to train the models.
+Make sure that you are not running object detection and classification models at the same time. Both of the models are using Tensoflow. They try to allocate all the memory in the GPU from the very beginning. Not to face with memory problems, I increased the swap file to 50 GB. The machine I used in Google Cloud is n1-standard-4 (4 vCPUs, 15 GB memory) with 1 GPU  that is NVIDIA Tesla K80). It took few hours to train the models.
 
 ### Refinement
 To train object detection API, I  was initially thinking to use labeled data ([vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/vehicles.zip) and [non-vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/non-vehicles.zip) which are retrieved by Udacity from  [GTI vehicle image database](http://www.gti.ssr.upm.es/data/Vehicle_database.html) and [the KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/) ). I was giving the full size of the image as object coordinates. However, it returned poor performance. Later, I used  [annotated data set](https://github.com/udacity/self-driving-car/tree/master/annotations) provided by CrowdAI. The annotated data set has multiple objects in every objects. It improved the performance of the detection model 20%.
@@ -200,7 +200,7 @@ I started first with high number of input images for my model. I either got memo
 
 For tensorflow object detection API, I tried different learning rates. However, the best performance came with googles original proposal that is the order of 0.0003. See [faster_rcnn_gpu.config](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/models/faster_rcnn/faster_rcnn_gpu.config) Pleasee see results section for the results.
 
-Tensorflow object detection API returns both object box coordinates on the image and also the class of the image. However, on top of tensorflow classification, applying DenseNet classification improves the accuracy around 10%. One significant impact of DenseNet was to eliminate the false positives generated by Faster R-CNN. See output video.
+Tensorflow object detection API returns both object box coordinates on the image and also the class of the image. However, on top of Tensorflow classification, applying DenseNet classification improves the accuracy around 10%. One significant impact of DenseNet was to eliminate the false positives generated by Faster R-CNN. See output video.
 
 For object classification, I stick to DenseNet model explanation in DenseNet paper as it is already state of the art. However, I lowered batch size to fit into my compute instance memory. I increased the number of epochs to get better model performance. But the performance difference was not significant at all.
 
@@ -208,7 +208,7 @@ For object classification, I stick to DenseNet model explanation in DenseNet pap
 
 ### Model Evaluation and Validation
 I ran  my object detection model, Faster R-CNN, about 3K steps with a batch size of 1. The total loss value per steps of running Faster R-CNN is shown in the diagram below. The total loss value  decreases pretty fast from 1.2 to 0.2. The reason of this decline is using pre-trained model. Having low total loss is indication of good performance
-![Faster R-CNN total lost](data/project_artifacts/faster_rcnn_total_lost_result.png)
+![Faster R-CNN total lost](data/report_artifacts/faster_rcnn_total_lost_result.png)
 
 On the other hand, I ran my object classification model with 10 epochs and batch size of 1. the average precision score of my object classification model is 0.67839921517. Average precision result ccan get max. of 1. 0.67 is not great performance result and it is lower than the results posted on [the KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/)
 
@@ -218,28 +218,28 @@ Given the computing resources challenges (Google cloud is charging every minite 
 ## V. Conclusion
 
 ### Free-Form Visualization
-I applied the final model on [the video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/test_video.mp4). The [output video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/out_video.mov) is as follows:
-![output video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/out_video.mov)
+I applied the final model on [the video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/test_video.mp4). The output video can be retrieved from [here](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/out_video.mov).
+![output video](data/videos/out_video.mov)
 
-As you will see in the video, there are some false positives and false negatives. Tensorflow object detection API returns many object boxes even for the same object. I applied non max supression. Among many factors, depending on the number of output we would like to get from  non max supression and value for iou_threshold, the number of false positives and false negatives changes.
+As you will see in the video, there are some false positives and false negatives. Tensorflow object detection API returns many object boxes even for the same object. I applied non max suppression. Among many factors, depending on the number of output we would like to get from  non max suppression and value for iou_threshold, the number of false positives and false negatives changes.
 
 ### Reflection
 
-Vehicle detection is important for public safety and security, surveillance, intelligent traffic control and autonomous driving.  Self-driving cars need to identify objects around them such as other vehicles on the road. In this problem, the objects are captured as a video by a forward looking camera mounted on a vehicle. I used tensorflow object detection API for detecting the objects in video frames. Then, DenseNet for classifying the detected objects. Both of the model were pre-trained on large datasets: [COCO](http://mscoco.org) and [ImageNet](http://www.image-net.org). Then, I trained  the models with vehicle and non-vehicle images. Then applied final models is applied on the  test video.
+Vehicle detection is important for public safety and security, surveillance, intelligent traffic control and autonomous driving.  Self-driving cars need to identify objects around them such as other vehicles on the road. In this problem, the objects are captured as a video by a forward looking camera mounted on a vehicle. I used Tensorflow object detection API for detecting the objects in video frames. Then, DenseNet for classifying the detected objects. Both of the model were pre-trained on large datasets: [COCO](http://mscoco.org) and [ImageNet](http://www.image-net.org). Then, I trained  the models with vehicle and non-vehicle images. Then applied final models is applied on the  test video.
 
-Working on two models: Faster R-CNN and DenseNet required so much effort because, I was executing the whole machine learning cycle (data creation, model creation, tuning, validation/evalution, saving etc.) two times for each model. This was extremely time consuming. However at the end I learned so many new things and I appreciate the knowledge. This capstone project may be considered just a proof of concept.  It helped me to realize how hard it can be to make a production ready system.
+Working on two models: Faster R-CNN and DenseNet required so much effort because, I was executing the whole machine learning cycle (data creation, model creation, tuning, validation/evaluation, saving etc.) two times for each model. This was extremely time consuming. However at the end I learned so many new things and I appreciate the knowledge. This capstone project may be considered just a proof of concept.  It helped me to realize how hard it can be to make a production ready system.
 
 The first challenge for me the computing resource related problems: less memory, less CPU etc. I was trying to run the models on my macbook. Then, I tried to use Google  Machine Learning Engine. However, I got OOM, out of memory and resource exhaustion errors. I could not find solutions to those problems. Then, I used google cloud platform and GPU instance for the  first time. After having few problems related to GPU and SWAP files, I was able to successfully run the models. I realized how computing intensive is dealing with lots of images. Further it also takes great time to compute and slows down progress on the project.
 
 The second challenge for me was reading the input images and converting them into numpy arrays or the format that each model require. I learned few good things about image coloring formats: BGR, RGB, greyscale and alpha channels etc.
 
-The third challenge for me was to limit the number of objects detected by the tensorflow object detection API. By default it detects at most 100 objects on an image. There may be tens of output boxes that by and large show the borders of the same object. I find out tensorflow non max supression method to decrease the number of the boxes. However, depending on the number of output we would like to get from  non max supression and the value of iou_threshold, the number of false positives and false negatives changes.
+The third challenge for me was to limit the number of objects detected by the Tensorflow object detection API. By default it detects at most 100 objects on an image. There may be tens of output boxes that by and large show the borders of the same object. I find out Tensorflow non max suppression method to decrease the number of the boxes. However, depending on the number of output we would like to get from  non max suppression and the value of iou_threshold, the number of false positives and false negatives changes.
 
 
 
 
 
 ### Improvement
-The model can definetely be improved by using at least 2-3 times more image input. I could not use much input resources because of computing resource and time limitations. Further, I could also run training longer. Note that Tensorflow object detection API is fine tuned on pet data in COCO by running the model 200K steps.
+The model can definitely be improved by using at least 2-3 times more image input. I could not use much input resources because of computing resource and time limitations. Further, I could also run training longer. Note that Tensorflow object detection API is fine tuned on pet data in COCO by running the model 200K steps.
 
-The same model can be applied not only vehicles but also traffic lights, pedestrians or other object types as long as you finetune with related images. One interesting training would be on car models and years usign [Stanford AI Cars Dataset](http://ai.stanford.edu/~jkrause/cars/car_dataset.html)
+The same model can be applied not only vehicles but also traffic lights, pedestrians or other object types as long as you fine-tune with related images. One interesting training would be on car models and years using [Stanford AI Cars Dataset](http://ai.stanford.edu/~jkrause/cars/car_dataset.html)
