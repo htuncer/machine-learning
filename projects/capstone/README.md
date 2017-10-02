@@ -1,7 +1,7 @@
-# Capstone Project of Machine Learning Engineer Nanodegree
-
-
 # Vehicle Detection Using Faster R-CNN and DenseNet
+### Capstone Project of Machine Learning Engineer Nanodegree
+
+
 
  The goal of the project is to create a machine learning pipeline for detecting vehicle(s) on a road from a video. The video is captured by a forward looking camera mounted on a vehicle.
  
