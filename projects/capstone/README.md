@@ -1,6 +1,5 @@
-# Machine Learning Engineer Nanodegree
-## Specializations
-## Project: Capstone Proposal and Capstone Project
+# Capstone Project of Machine Learning Engineer Nanodegree
+
 
 # Vehicle Detection Using Faster R-CNN and DenseNet
 
