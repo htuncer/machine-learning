@@ -134,7 +134,8 @@ I need to configure the model before fine-tuning with my own data set. Therefore
 - input_path: the path for your training record, train.record.
 - label_map_path: the path for label_map.pbtxt
 
-You can keep the rest of the config file as it is.
+I use batch size of 1 due to memory constraints. The learning rate that I applied is .0003.  
+You can keep the rest of the config file as you retrieved from the [sample configuration](https://github.com/tensorflow/models/blob/3bf85a4eddb9c56a28cc266ee4aa5604fb4d8334/object_detection/samples/configs/faster_rcnn_inception_resnet_v2_atrous_pets.config).
 
 Now, it's time to fine-tune the model with your own data by running the following command from the main directory i.e., ../capstone/
 
@@ -175,21 +176,73 @@ All the steps and commands that I used are documented in [train.ipynb](https://g
 
 #### Implementing Object Classification Model
 I implement DenseNet to classify object as per the [DenseNet paper](https://arxiv.org/pdf/1608.06993.pdf). My implementation of DenseNet is in [densenet.py](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/densenet.py)
-I use [pre-trained DenseNet](https://github.com/liuzhuang13/DenseNet) on ImageNet for object classification.
- load_data method in densenet.py reads all the images into numpy array. CV2 reads the images in BGR format. Images are resized to 224x224. Mean pixel of the images are subtracted to make the dataset compatible with the pre-trained models:
- x[:, :, :, 0] -= 103.939
- x[:, :, :, 1] -= 116.779
- x[:, :, :, 2] -= 123.68
- All these values are as per the DenseNet paper.
+
+Following figure shows how DenseNet works in high level.
+
+![Fig 2.](data/report_artifacts/densenet.png)
+
+Fig. 2: A deep DenseNet with three dense blocks. The layers between two adjacent blocks are referred to as transition layers and change feature-map sizes via convolution and pooling. [Source.](https://arxiv.org/pdf/1608.06993.pdf)
+
+
+densenet_model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth_rate=48, nb_filter=96, reduction=0.5, dropout_rate=0.0, weight_decay=1e-4, num_classes=1000, weights_path=None):
+
+My DenseNet model uses the following parameters and the corresponding values:
+- img_rows:224 (input image width in pixels)
+- img_cols: 224 (input image column in pixels)
+- color_type: 3 (input image channels. In our case, 3 representing Blue, Green, and Red)
+- nb_dense_block: 4 (number of dense blocks to add to end)
+- growth_rate: 48 (number of filters to add per dense block)
+- nb_filter: 96 (initial number of filters)
+- nb_layers = [6, 12, 36, 24] the number of layers of convovlution block to append to the model. Note that, block id designates which value from the array to be used.
+- reduction: 0.5 (reduction factor of transition blocks)
+- dropout_rate:0.0 (dropout rate)
+- weight_decay:1e-4 (weight decay factor)
+- learning_rate:1e-3 (learning rate)
+- eps = 1.1e-5 (epsilon for batch normalization)
+- classes: 2(number of classes to classify images: vehicle and non-vehicle )
+- weights_path: (path to pre-trained weights) I use [pre-trained
+ DenseNet](https://github.com/liuzhuang13/DenseNet) on ImageNet for object classification.
+
+Inside of DenseNet model, I have the following functional modules. Each module uses the above parameter values - if not stated otherwise.
+
+In my convolution block, I applied BatchNormalization, Relu activation, 1x1 Conv2D, 3x3 Conv2D, and optional dropout. I use no dropout value during my training.
+
+In the transition block, I applied BatchNorm, 1x1 Convolution, averagePooling, optional compression, dropout. I used 1.0 for compression that is to reduce the number of feature maps in the transition block.
+
+I build a dense block where the output of each convolution block is fed into subsequent one. The function accepts, input tensor, stage (index for dense block), nb_layers, nb_filter, growth_rate, dropout_rate, weight_decay(1e-4), grow_nb_filters(True, flag to decide to allow number of filters to grow).
+
+ For the transfer learning, I could not use  model.layers.pop() since model is not of Sequential() type. I truncate and replace softmax layer for transfer learning.
+
+I use helper method used for scaling the input.  The method  accepts a set of weights and biases and use them to scale the input data. The method gets the following parameters:
+- axis: integer, axis along which to normalize in mode 0. For instance,
+    if your input tensor has shape (samples, channels, rows, cols),
+    set axis to 1 to normalize per feature map (channels axis).
+- momentum: momentum in the computation of the
+    exponential average of the mean and standard deviation
+    of the data, for feature-wise normalization.
+- weights: Initialization weights.
+    List of two Numpy arrays, with shapes:
+    `[(input_shape,), (input_shape,)]`
+- beta_init: name of initialization function for shift parameter. This parameter is only relevant if you don't pass a `weights` argument.
+- gamma_init: name of initialization function for scale parameter. This parameter is only relevant if you don't pass a `weights` argument.
+
+The implementation is in [densenet_custom_layers](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/densenet_custom_layers.py). In [densenet.py](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/densenet.py) you will see this method used as Scale.
+
+The model by default uses data/densenet161_weights_tf.h5 if not provided with weights.
+
+
+
+I used my own image dataset to finetue the model, other than CIFAR. load_data method in densenet.py reads all the images into numpy array. Note that CV2 reads the images in BGR format. Images are resized to 224x224. Mean pixel of the images are subtracted to make the dataset compatible with the pre-trained models:
+ img[:, :, :, 0] -= 103.939
+ img[:, :, :, 1] -= 116.779
+ img[:, :, :, 2] -= 123.68
 
  All the images are shuffled. %70 of them used for training %30 used for validation.
  My classifier is binary classifier, meaning identifies if object is a vehicle or not. The number of classes is set to two. Non-vechicle images got class 0 while vehicle images got class 1 tag. This is different then what we have done in tensorflow that it requires classes to start from 1, not 0.
 
-In the DenseNet implementation, you will see nb_layers and nb_filters are set to specific values. Those values are also capied from the DenseNet paper. The model by default uses data/densenet161_weights_tf.h5 if not provided with weights.
-
 See [train.ipynb](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/train.ipynb) and [inference.ipynb](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/inference.ipynb) for details of my implementation.
 
-For validation of my classification model, I use [average precision](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html) from  sklearn library. It's pretty straight forward, the method accepts valid Y values and predicted values for validation set. The output is a floating number between 0 and 1.
+For validation of my classification model, I use [average precision](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html) from  sklearn library. It's pretty straight forward, the method accepts valid Y values and predicted values for validation set. The output is a floating number between 0 and 1. Average Precision is closer 1, the better the performance.
 
 Make sure that you are not running object detection and classification models at the same time. Both of the models are using Tensoflow. They try to allocate all the memory in the GPU from the very beginning. Not to face with memory problems, I increased the swap file to 50 GB. The machine I used in Google Cloud is n1-standard-4 (4 vCPUs, 15 GB memory) with 1 GPU  that is NVIDIA Tesla K80). It took few hours to train the models.
 
