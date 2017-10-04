@@ -44,11 +44,9 @@ Training data for object classification model is the labeled data for [vehicle](
 
 Non-vehicle images are extracted from road sequences not containing vehicles. Vehicle images includes high variety of vehicle make, model and color. One important feature affecting the appearance of the vehicle is the position of the vehicle relative to the camera. Therefore,  images are separated in four different regions according to the pose: middle/close range in front of the camera, middle/close range in the left, close/middle range in the right, and far range. In addition, the images are extracted in such a way that they do not perfectly fit the contour of the vehicle in order to make the classifier more robust to offsets in the hypothesis generation stage. Instead, some images contain the vehicle loosely (some background is also included in the image), while others only contain the vehicle partially
 
-I made sure that I have equal number of samples from both vehicle and non-vehicle classes.
+I made sure that I have equal number of samples from both vehicle and non-vehicle classes. The inputs are randomized before splitting them.  %80 of input data is for training while %20 is for validation.
 
-I randomize the inputs before splitting them.  %80 of input data is for training while %20 is for validation.
-
-I will run my pipeline on [the test video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/test_video.mp4) provided by Udacity.
+The pipeline will be run on [the test video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/test_video.mp4) provided by Udacity.
 
 
 ### Exploratory Visualization
@@ -166,16 +164,24 @@ I was satisfied with the result that is total loss of 0.2 and the object detecti
 
 python tf_models/object_detection/export_inference_graph.py --input_type image_tensor --pipeline_config_path models/faster_rcnn/faster_rcnn_gpu.config  --trained_checkpoint_prefix models/faster_rcnn/train/model.ckpt-3084 --output_directory models/faster_rcnn/output
 
-Remember to give the highest number for model.ckpt in the directory. In my case it was 3084. After successful execution of the command, you should see the following files in models/faster_rcnn/outpu:
+Remember to give the highest number for model.ckpt in the directory. In my case it was 3084. After successful execution of the command, you should see the following files in models/faster_rcnn/output:
 
 tuncer@ins1:~/machine-learning/projects/capstone$ ls -lh models/faster_rcnn/output/
+
 total 465M
+
 -rw-rw-r-- 1 tuncer tuncer 77 Sep 22 02:45 checkpoint
+
 -rw-rw-r-- 1 tuncer tuncer 231M Sep 22 02:45 frozen_inference_graph.pb
+
 -rw-rw-r-- 1 tuncer tuncer 227M Sep 22 02:45 model.ckpt.data-00000-of-00001
+
 -rw-rw-r-- 1 tuncer tuncer 42K Sep 22 02:45 model.ckpt.index
+
 -rw-rw-r-- 1 tuncer tuncer 7.2M Sep 22 02:45 model.ckpt.meta
+
 drwxr-xr-x 3 tuncer tuncer 4.0K Sep 22 02:46 saved_model
+
 
 Now, it is time to do inference on the video frames. I upload the previously trained model using tf.Graph(). See [inference.ipynb]((https://github.com/htuncer/machine-learning/blob/master/projects/capstone/inference.ipynb)). When you run the prediction on the model, the output will be boxes that includes coordinates of an object in the form of [y_min, x_min, y_max, x_max]. Keep in mind that the values of coordinates are normalized. For each box, you will see corresponding class value and confidence score for the prediction in classes and scores variables.
 
@@ -238,9 +244,13 @@ The implementation is in [densenet_custom_layers](https://github.com/htuncer/mac
 The model by default uses data/densenet161_weights_tf.h5 if not provided with weights. I run the model with batch_size 1 and epochs of 10.
 
 I used my own image dataset to fine-tune the model, other than CIFAR dataset. load_data method in densenet.py reads all the images into numpy array. Note that CV2 reads the images in BGR format. Images are resized to 224x224. Mean pixel of the images are subtracted to make the dataset compatible with the pre-trained models:
+
  img[:, :, :, 0] -= 103.939
+
  img[:, :, :, 1] -= 116.779
+
  img[:, :, :, 2] -= 123.68
+
 
  All the images are shuffled. %70 of them used for training %30 used for validation.
  My classifier is binary classifier, meaning identifies if object is a vehicle or not. The number of classes is set to two. Non-vehicle images got class 0 while vehicle images got class 1 tag. This is different then what we have done in tensorflow that it requires classes to start from 1, not 0.
@@ -261,6 +271,7 @@ I started first with high number of input images for my detection model. I eithe
 For tensorflow object detection API, I tried different learning rates. The learning rate 0.00001 was resulting 0.5 total loss. I increase the learning rate to 0.0003 that result in total loss of 0.2.
 
 I tried batch size of 128, 64 and 8 but at different stages of the model runs, I faced with problems such as process killed, memory exhaustion etc.  Therefore, I used batch size of 1. Disadvantage of having batch size of 1 is high variation in loss value for each step as seen below:
+
 INFO:tensorflow:global step 3075: loss = 0.1889 (2.743 sec/step)
 
 INFO:tensorflow:global step 3076: loss = 0.1710 (2.662 sec/step)
@@ -331,4 +342,4 @@ The third challenge for me was to limit the number of objects detected by the Te
 ### Improvement
 The model can definitely be improved by using at least 2-3 times more image input. I could not use much input resources because of computing resource and time limitations. Further, I could also run training longer. Note that Tensorflow object detection API is fine tuned on pet data in COCO by running the model 200K steps.
 
-The same model can be applied not only vehicles but also traffic lights, pedestrians or other object types as long as you fine-tune with related images. One interesting training would be on car models and years using [Stanford AI Cars Dataset](http://ai.stanford.edu/~jkrause/cars/car_dataset.html)
+The same model can be applied not only vehicles but also traffic lights, pedestrians or other object types as long as you fine-tune with related images. One interesting training would be on car models and years using [Stanford AI Cars Dataset](http://ai.stanford.edu/~jkrause/cars/car_dataset.html).
