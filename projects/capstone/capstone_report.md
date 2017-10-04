@@ -133,7 +133,7 @@ My classifier is binary classifier, meaning identifies if object is a vehicle or
 ### Implementation
 
 #### Implementing Object Detection Model
-I use  [google Tensorflow object detection api](https://github.com/tensorflow/models/tree/master/research/object_detection) to detect vehicles on image. Therefore, I add it as sub-repo to my github project. I did not write a code for object detection. Tensorflow object detection library already provides training and evaluation script. I explained how I used them below.  I only wrote code to convert my customer image set into tf records as previously explained in Data Preprocessing Section.
+I use  [google Tensorflow object detection api](https://github.com/tensorflow/models/tree/master/research/object_detection) to detect vehicles on image. Tensorflow object detection library already provides training and evaluation scripts. I explained how I used them below.  I only wrote code to convert my customer image set into tf records as previously explained in Data Preprocessing Section.
 
 Training an object detection model from scratch requires huge computational resource and time. Therefore, I used the already trained model from [Tensorflow Detection Model Zoo](https://github.com/tensorflow/models/blob/3bf85a4eddb9c56a28cc266ee4aa5604fb4d8334/object_detection/g3doc/detection_model_zoo.md) I picked faster_rcnn_inception_resnet_v2_atrous_coco which is pre-trained Faster R-CNN inception resnetv2 model. The reason of selecting Faster R-CNN is its high accuracy [result](https://arxiv.org/abs/1611.10012).
 
