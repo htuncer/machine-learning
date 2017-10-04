@@ -76,7 +76,6 @@ def load_data(img_rows, img_cols):
 
     Y_train = np.array(Y_list[:split])
     Y_valid = np.array(Y_list[split:])
-
     del Y_list
 
     # Transform targets to keras compatible format
@@ -87,7 +86,7 @@ def load_data(img_rows, img_cols):
 
 
 
-def densenet_model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth_rate=48, nb_filter=96, reduction=0.5, dropout_rate=0.0, weight_decay=1e-4, num_classes=1000, weights_path=None):
+def densenet_model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth_rate=48, nb_filter=96, reduction=0.5, dropout_rate=0.0, weight_decay=1e-4, num_classes=1000, weights_path=None, nb_layers=[6, 12, 36, 24]):
     '''
     DenseNet Model for Keras
     Model Schema is based on
@@ -118,8 +117,8 @@ def densenet_model(img_rows, img_cols, color_type=1, nb_dense_block=4, growth_ra
 
 
     # From architecture for ImageNet (Table 1 in the paper)
-    nb_filter = 96
-    nb_layers = [6, 12, 36, 24]  # For DenseNet-161
+    #nb_filter = 96
+    #nb_layers = [6, 12, 36, 24]  # For DenseNet-161
 
     # Initial convolution
     x = ZeroPadding2D((3, 3), name='conv1_zeropadding')(img_input)
