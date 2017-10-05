@@ -10,15 +10,15 @@ import cv2
 from collections import defaultdict
 from io import StringIO
 from PIL import Image
+sys.path.append(os.path.abspath('./tf_models'))
+sys.path.append(os.path.abspath('./tf_models/slim'))
 
 from object_detection.utils import label_map_util
-
 from object_detection.utils import visualization_utils as vis_util
 
 from densenet import densenet_model
 
-sys.path.append(os.path.abspath('./tf_models'))
-sys.path.append(os.path.abspath('./tf_models/slim'))
+
 
 #input video
 #cap = cv2.VideoCapture('data/videos/test_video.mp4')
