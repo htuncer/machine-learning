@@ -9,7 +9,6 @@ import cv2
 
 from collections import defaultdict
 from io import StringIO
-from matplotlib import pyplot as plt
 from PIL import Image
 
 from object_detection.utils import label_map_util
@@ -20,6 +19,18 @@ from densenet import densenet_model
 
 sys.path.append(os.path.abspath('./tf_models'))
 sys.path.append(os.path.abspath('./tf_models/slim'))
+
+#input video
+#cap = cv2.VideoCapture('data/videos/test_video.mp4')
+cap = cv2.VideoCapture('data/videos/project2.mp4')
+
+
+# Define the codec and create VideoWriter object to save the video
+fourcc = cv2.VideoWriter_fourcc('m','p','4','v')
+#video_writer = cv2.VideoWriter('output.m4v', fourcc, 30.0, (640, 480))
+fourcc = cv2.VideoWriter_fourcc('m','p','4','v')
+#output video
+video = cv2.VideoWriter('data/out_project2.m4v',fourcc,60,(1280,720))
 
 def load_image_into_numpy_array(image):
   (im_width, im_height) = image.size
@@ -96,15 +107,6 @@ classification_model_path = 'models/densenet/densenet_finetuned.h5'
 classification_model = densenet_model(img_rows=densenet_img_rows, img_cols=densenet_img_cols,
                                         color_type=channel, num_classes=num_classes, weights_path=classification_model_path)
 
-
-#input video
-#cap = cv2.VideoCapture('data/videos/test_video.mp4')
-cap = cv2.VideoCapture('data/videos/project2.mp4')
-#output video
-video = cv2.VideoWriter('data/out_project2.avi',-1,60,(1280,720))
-
-#fourcc = cv2.VideoWriter_fourcc(*'XVID')
-#video = cv2.VideoWriter("output12.avi", fourcc, 20.0, (1280,720))
 
 i = 0
 while(cap.isOpened()):
