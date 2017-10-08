@@ -86,7 +86,8 @@ Figure 4: Statistics of annotations in labels.csv belong to CrowdAI dataset..
 
 Out of 66389 annotations 94.24% of them  belong to cars rest is Truck. This reflect the real world scenario where we happen to see cars a lot more compared to Trucks. All these annotations are on 9420 images in total.
 
-
+All the annotations are positional data. Below I provide a a scatterplot of the bottom-most corner of each annotation. As seen int scatterplot, there are so many annotations that start on the X=0 line. Intuitively, it may mean the pictures taken from a crowded traffic.
+![](data/report_artifacts/a_pos.png)
 
 ### Algorithms and Techniques
 Faster R-CNN will be used for object region detection. DenseNet will be used for classification if the detected object is a vehicle or not. Both of these models are state-of-the art in object detection and classification. See Domain Background section for details of these models. I will use the pre-trained version of Faster R-CNN and DenseNet because it may take days to train a model from scratch. [Faster R-CNN inception resnetv2](https://github.com/tensorflow/models/blob/master/object_detection/g3doc/detection_model_zoo.md) is pre-trained on [COCO](http://mscoco.org). [DenseNet](https://github.com/liuzhuang13/DenseNet) is pre-trained on [ImageNet](http://www.image-net.org). COCO and ImageNet are large datasets containing thousands of images for hundreds of object types. Faster R-CNN and DenseNet will go through supervised training with vehicle/non-vehicle dataset that I mentioned above. The images in these data sets will be resized to match the image sizes used during pre-train process. I don't expect to make other pre-processing on the images.
@@ -120,9 +121,13 @@ The input images are resized as per the image resizing scheme described in the [
 #### Processing Data for Object Classification Model
 _load_data_ method in [densenet.py](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/densenet.py) reads all the images into numpy array. CV2 library reads the images in BGR format. Images are resized to 224x224.
 Mean pixel of the images are subtracted to make the dataset compatible with the pre-trained models:
-x[:, :, :, 0] -= 103.939
-x[:, :, :, 1] -= 116.779
-x[:, :, :, 2] -= 123.68
+
+img[:, :, :, 0] -= 103.939
+
+img[:, :, :, 1] -= 116.779
+
+img[:, :, :, 2] -= 123.68
+
 
 All the images are shuffled. %70 of them used for training %30 used for validation.
 
@@ -313,7 +318,8 @@ I further tested the detection model on different test images. The model was abl
 
 I ran my object classification model with 10 epochs and batch size of 1. The final model has average precision score of 0.67839921517. Average precision result can be 1 at highest.  In the [KITTI benchmark](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=2d), there are 124 results for car detection is reported, the worst performer's  AP score is 2.66% and the best is 90.55%. My model gets the 83th place in the ranking with the AP score of 0.67839921517.
 
-As seen in the [output vide](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/out_video.mov), the model detects vehicles with confidence >80%. See the confidence score on the rectangles that show the boundary of the vehicles. When I apply the model on different videos, I got the similar results. Note that my model is not trained on any of the frames from these models.
+As seen in the [output vide 1](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/out_video_short.mov) and [output vide 2](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/out_video_long.m4v), the model detects vehicles with confidence >80%. See the confidence score on the rectangles that show the boundary of the vehicles. When I apply the model on different videos, I got the similar results. Note that my model is not trained on any of the frames from these models.
+
 
 The built pipeline is combination of both detection and classification models. The object detection model is fine-tuned to only detect vehicles. It returns confidence scores for each object. Then, the classification model does extra filtering on the output of the detection model. Therefore, intuitively I would expect the model perform better than using  Faster R-CNN or DenseNet separately. Not having the higher ranking on the competition can be explained by not training the models well. Note that I only used tens of thousands of images, further my batch size and epochs were very limited due to lack of computational resource. Note that the images that my model tested against was not all from KITTI. They are also from GTI. The benchmark results are from state of the art datasets containing hundreds of thousands images with days of training and fine-tuning.  
 
@@ -321,8 +327,10 @@ The built pipeline is combination of both detection and classification models. T
 ## V. Conclusion
 
 ### Free-Form Visualization
-I applied the final model on [the video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/test_video.mp4). The output video can be retrieved from [here](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/out_video.mov).
-![output video](data/videos/out_video.mov)
+I applied the final model on [the video](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/test_video.mp4). The output videos can be retrieved from [here](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/out_video_short.mov).
+![short](data/videos/out_video_short.mov)
+See [the longer version](https://github.com/htuncer/machine-learning/blob/master/projects/capstone/data/videos/out_video_long.m4v)
+![long](data/videos/out_video_long.m4v)
 
 As you will see in the video, there are some false positives and false negatives. Tensorflow object detection API returns many object boxes even for the same object. I applied non max suppression. Among many factors, depending on the number of output we would like to get from  non max suppression and value for iou_threshold, the number of false positives and false negatives changes.
 
